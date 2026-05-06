@@ -37,7 +37,7 @@ interface Socio {
     MatIconModule,
     MatChipsModule,
     CommonModule,
-    FormsModule, // ← añadir para ngModel
+    FormsModule,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
@@ -49,6 +49,7 @@ export class MainLayout {
   filtrosAbiertos = false;
   sortColumn: 'nombres' | 'apellidos' | null = null;
   sortAsc = true;
+  estadoFiltro: 'todos' | 'Activo' | 'Inactivo' = 'todos';
 
   filtros = [
     { label: 'Activo', activo: false },
@@ -59,26 +60,6 @@ export class MainLayout {
     { label: '0 → 9', activo: false },
     { label: '9 → 0', activo: false },
   ];
-  sortBy(col: 'nombres' | 'apellidos') {
-    if (this.sortColumn === col) {
-      this.sortAsc = !this.sortAsc; // si ya está activo, invierte el orden
-    } else {
-      this.sortColumn = col;
-      this.sortAsc = true;
-    }
-    this.socios.sort((a, b) => {
-      const valA = a[col].toLowerCase();
-      const valB = b[col].toLowerCase();
-      return this.sortAsc
-        ? valA.localeCompare(valB)
-        : valB.localeCompare(valA);
-    });
-  }
-
-
-
-
-
 
   socios: Socio[] = [
     {
@@ -94,34 +75,77 @@ export class MainLayout {
       contrasena: 'vW2O8a9z7',
       selected: false,
     },
+    {
+      id: '02',
+      nombres: 'Ana',
+      apellidos: 'Martínez López',
+      correo: 'ana@gmail.com',
+      tel: '+34 611 11 11 11',
+      dni: '12345678A',
+      estado: 'Inactivo',
+      fechaVenc: '01/01/2026',
+      profesor: 'No',
+      contrasena: 'pass123',
+      selected: false,
+    },
   ];
-  //Aqui para saber si estan todos marcados, SE GUARDA EN LA VARIABLE SOCIO
-  get allSelected(): boolean {
-    return this.socios.length > 0 && this.socios.every((s) => s.selected);
+
+  get sociosFiltrados(): Socio[] {
+    if (this.estadoFiltro === 'todos') return this.socios;
+    return this.socios.filter(s => s.estado === this.estadoFiltro);
   }
-  //Esto para saber si hay alguno que no esta seleccionado, SE GUARDA EN LA VARIABLE SOCIO
+
+  get allSelected(): boolean {
+    return this.sociosFiltrados.length > 0 && this.sociosFiltrados.every(s => s.selected);
+  }
+
   get someSelected(): boolean {
-    return this.socios.some((s) => s.selected) && !this.allSelected;
+    return this.sociosFiltrados.some(s => s.selected) && !this.allSelected;
   }
 
   get selectedSocios(): Socio[] {
-    return this.socios.filter((s) => s.selected);
+    return this.socios.filter(s => s.selected);
   }
 
   toggleAll(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.socios.forEach((s) => (s.selected = checked));
+    this.sociosFiltrados.forEach(s => (s.selected = checked));
   }
 
   onCheckChange(): void {}
 
+  filtrarEstado() {
+    if (this.estadoFiltro === 'todos') {
+      this.estadoFiltro = 'Activo';
+    } else if (this.estadoFiltro === 'Activo') {
+      this.estadoFiltro = 'Inactivo';
+    } else {
+      this.estadoFiltro = 'todos';
+    }
+  }
+
+  sortBy(col: 'nombres' | 'apellidos') {
+    if (this.sortColumn === col) {
+      this.sortAsc = !this.sortAsc;
+    } else {
+      this.sortColumn = col;
+      this.sortAsc = true;
+    }
+    this.socios.sort((a, b) => {
+      const valA = a[col].toLowerCase();
+      const valB = b[col].toLowerCase();
+      return this.sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    });
+  }
+
   toggleFiltros() {
     this.filtrosAbiertos = !this.filtrosAbiertos;
   }
+
   toggleChip(filtro: any) {
     filtro.activo = !filtro.activo;
   }
-  //AQui el Padre recibe el socio y lo pasa al dialog
+
   openAddMember(socio?: Socio) {
     const dialogRef = this.dialog.open(AddMember, {
       width: '480px',
@@ -137,6 +161,7 @@ export class MainLayout {
       }
     });
   }
+
   openMember(socio?: Socio) {
     const esNuevo = !socio;
     const dialogRef = this.dialog.open(Member, {
@@ -150,14 +175,14 @@ export class MainLayout {
       if (esNuevo) {
         this.socios.push({
           id: String(this.socios.length + 1).padStart(2, '0'),
-          nombres: result.nombres,
+          nombres:   result.nombres,
           apellidos: result.apellidos,
-          correo: result.correo,
-          tel: result.tel,
-          dni: result.dni,
-          estado: result.estado ?? 'Activo',
+          correo:    result.correo,
+          tel:       result.tel,
+          dni:       result.dni,
+          estado:    result.estado ?? 'Activo',
           fechaVenc: '',
-          profesor: result.profesor ?? 'No',
+          profesor:  result.profesor ?? 'No',
           contrasena: '',
           selected: false,
         });
@@ -168,30 +193,41 @@ export class MainLayout {
     });
   }
 
-  goToRegister() {
-    this.router.navigate(['/register']);
-  }
-  onEliminar() {
+  // Eliminar un socio concreto (desde el menú de 3 puntos)
+  onEliminar(socio?: Socio) {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (!confirmed) return;
-      console.log('Miembro eliminado'); // aquí llamarás al servicio
+      if (socio) {
+        // Elimina el socio concreto
+        this.socios = this.socios.filter(s => s !== socio);
+      } else {
+        // Elimina todos los seleccionados
+        this.socios = this.socios.filter(s => !s.selected);
+      }
     });
   }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
+  }
+
   onModificar() {
     console.log('Modificar');
   }
+
   openAddCurso() {
     this.dialog.open(AddCurso, { width: '400px' });
   }
 
-  // botón "Curso" en el menú de 3 puntos
   onCurso() {
     this.dialog.open(CursosMember, { width: '440px' });
   }
+
   onPagos() {
     console.log('Pagos');
   }
+
   onCorreo() {
     console.log('Correo', this.selectedSocios);
   }
