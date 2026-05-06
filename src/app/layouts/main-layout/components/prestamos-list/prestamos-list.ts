@@ -51,8 +51,10 @@ export class PrestamosListComponent implements OnInit {
       width: '600px',
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.cargarDatos();
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.cargarDatos();
+      }
     });
   }
 

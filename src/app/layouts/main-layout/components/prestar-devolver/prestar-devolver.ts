@@ -20,12 +20,10 @@ export class PrestarDevolverComponent implements OnInit {
   disponibles: objeto[] = [];
   prestados: objeto[] = [];
 
-  //prestar
   herramientaSeleccionadaId: number | null = null;
   entidadAjena = '';
   anotacionesPrestamo = '';
 
-  //devolver
   herramientaDevueltaId: number | null = null;
   anotacionesDevolucion = '';
 
@@ -34,8 +32,8 @@ export class PrestarDevolverComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    this.disponibles = this.prestamoService.getDisponibles();
-    this.prestados = this.prestamoService.getPrestados();
+    this.disponibles = [...this.prestamoService.getDisponibles()];
+    this.prestados = [...this.prestamoService.getPrestados()];
   }
 
   prestar(): void {
@@ -43,6 +41,7 @@ export class PrestarDevolverComponent implements OnInit {
     this.prestamoService.prestarObjeto(this.herramientaSeleccionadaId);
     this.limpiarPrestamo();
     this.cargarDatos();
+    this.dialogRef.close(true); // cierra el diálogo tras prestar
   }
 
   devolver(): void {
@@ -50,6 +49,7 @@ export class PrestarDevolverComponent implements OnInit {
     this.prestamoService.devolverObjeto(this.herramientaDevueltaId);
     this.limpiarDevolucion();
     this.cargarDatos();
+    this.dialogRef.close(true); // cierra el diálogo tras devolver
   }
 
   limpiarPrestamo(): void {
