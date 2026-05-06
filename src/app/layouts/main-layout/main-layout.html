@@ -50,8 +50,18 @@
               (change)="toggleAll($event)" />
           </th>
           <th>ID socio</th>
-          <th>Nombres</th>
-          <th>Apellidos</th>
+          <th style="cursor:pointer" (click)="sortBy('nombres')">
+            Nombres
+            @if (sortColumn === 'nombres') {
+              {{ sortAsc ? '↑' : '↓' }}
+            }
+          </th>
+          <th style="cursor:pointer" (click)="sortBy('apellidos')">
+            Apellidos
+            @if (sortColumn === 'apellidos') {
+              {{ sortAsc ? '↑' : '↓' }}
+            }
+          </th>
           <th>Correos</th>
           <th>Teléfono</th>
           <th>DNI/NIE</th>

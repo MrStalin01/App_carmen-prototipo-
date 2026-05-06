@@ -47,6 +47,9 @@ export class MainLayout {
   private router = inject(Router);
 
   filtrosAbiertos = false;
+  sortColumn: 'nombres' | 'apellidos' | null = null;
+  sortAsc = true;
+
   filtros = [
     { label: 'Activo', activo: false },
     { label: 'Inactivo', activo: false },
@@ -56,6 +59,26 @@ export class MainLayout {
     { label: '0 → 9', activo: false },
     { label: '9 → 0', activo: false },
   ];
+  sortBy(col: 'nombres' | 'apellidos') {
+    if (this.sortColumn === col) {
+      this.sortAsc = !this.sortAsc; // si ya está activo, invierte el orden
+    } else {
+      this.sortColumn = col;
+      this.sortAsc = true;
+    }
+    this.socios.sort((a, b) => {
+      const valA = a[col].toLowerCase();
+      const valB = b[col].toLowerCase();
+      return this.sortAsc
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    });
+  }
+
+
+
+
+
 
   socios: Socio[] = [
     {
