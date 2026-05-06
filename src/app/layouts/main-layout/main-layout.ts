@@ -50,6 +50,10 @@ export class MainLayout {
   sortColumn: 'nombres' | 'apellidos' | null = null;
   sortAsc = true;
   estadoFiltro: 'todos' | 'Activo' | 'Inactivo' = 'todos';
+  textoBusqueda = '';
+
+
+
 
   filtros = [
     { label: 'Activo', activo: false },
@@ -91,8 +95,25 @@ export class MainLayout {
   ];
 
   get sociosFiltrados(): Socio[] {
-    if (this.estadoFiltro === 'todos') return this.socios;
-    return this.socios.filter(s => s.estado === this.estadoFiltro);
+    let lista = this.socios;
+
+    // filtro de estado
+    if (this.estadoFiltro !== 'todos') {
+      lista = lista.filter(s => s.estado === this.estadoFiltro);
+    }
+
+    // filtro de búsqueda
+    if (this.textoBusqueda.trim()) {
+      const texto = this.textoBusqueda.toLowerCase().trim();
+      lista = lista.filter(s =>
+        s.nombres.toLowerCase().includes(texto)   ||
+        s.apellidos.toLowerCase().includes(texto) ||
+        s.correo.toLowerCase().includes(texto)    ||
+        s.dni.toLowerCase().includes(texto)
+      );
+    }
+
+    return lista;
   }
 
   get allSelected(): boolean {

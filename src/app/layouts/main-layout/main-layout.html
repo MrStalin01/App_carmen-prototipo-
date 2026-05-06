@@ -24,8 +24,7 @@
     <div class="buscador-wrapper">
       <div class="caja-buscador d-flex gap-1 align-items-center">
         <i class="bi bi-search"></i>
-        <input class="buscador" type="text" placeholder="Buscar....">
-        <button class="btn-expandir" (click)="toggleFiltros()">
+        <input class="buscador" type="text" placeholder="Buscar...." [(ngModel)]="textoBusqueda">        <button class="btn-expandir" (click)="toggleFiltros()">
           <i class="bi" [class.bi-chevron-down]="!filtrosAbiertos" [class.bi-chevron-up]="filtrosAbiertos"></i>
         </button>
       </div>
