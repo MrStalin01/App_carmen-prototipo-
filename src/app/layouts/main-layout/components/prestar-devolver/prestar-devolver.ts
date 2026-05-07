@@ -24,8 +24,42 @@ export class PrestarDevolverComponent implements OnInit {
   entidadAjena = '';
   anotacionesPrestamo = '';
 
+  errorEntidadAjena = '';
+  errorAnotacionesPrestamo = '';
+
   herramientaDevueltaId: number | null = null;
   anotacionesDevolucion = '';
+  errorAnotacionesDevolucion = '';
+
+  validarEntidadAjena(): void {
+    if (!this.entidadAjena.trim()) {
+      this.errorEntidadAjena = 'El nombre de la persona/entidad es obligatorio';
+    } else {
+      this.errorEntidadAjena = '';
+    }
+  }
+
+  validarAnotacionesPrestamo(): void {
+    const anot = this.anotacionesPrestamo.trim();
+    if (!anot) {
+      this.errorAnotacionesPrestamo = 'Las anotaciones son obligatorias';
+    } else if (anot.length < 5) {
+      this.errorAnotacionesPrestamo = 'Las anotaciones deben tener al menos 5 caracteres';
+    } else {
+      this.errorAnotacionesPrestamo = '';
+    }
+  }
+
+  validarAnotacionesDevolucion(): void {
+    const anot = this.anotacionesDevolucion.trim();
+    if (!anot) {
+      this.errorAnotacionesDevolucion = 'Las anotaciones de devolución son obligatorias';
+    } else if (anot.length < 5) {
+      this.errorAnotacionesDevolucion = 'Las anotaciones deben tener al menos 5 caracteres';
+    } else {
+      this.errorAnotacionesDevolucion = '';
+    }
+  }
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -37,6 +71,10 @@ export class PrestarDevolverComponent implements OnInit {
   }
 
   prestar(): void {
+    this.validarEntidadAjena();
+    this.validarAnotacionesPrestamo();
+
+    if (this.errorEntidadAjena || this.errorAnotacionesPrestamo) return;
     if (!this.herramientaSeleccionadaId || !this.entidadAjena.trim()) return;
     this.prestamoService.prestarObjeto(this.herramientaSeleccionadaId);
     this.limpiarPrestamo();
@@ -45,6 +83,8 @@ export class PrestarDevolverComponent implements OnInit {
   }
 
   devolver(): void {
+    this.validarAnotacionesDevolucion();
+    if (!this.herramientaDevueltaId || this.errorAnotacionesDevolucion) return;
     if (!this.herramientaDevueltaId) return;
     this.prestamoService.devolverObjeto(this.herramientaDevueltaId);
     this.limpiarDevolucion();

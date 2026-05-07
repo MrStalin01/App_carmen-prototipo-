@@ -4,21 +4,33 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogClose } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PrestamoService, objeto } from '../../services/prestamo.service';
 import { AddPrestamo } from '../add-prestamo/add-prestamo';
 import { PrestarDevolverComponent } from '../prestar-devolver/prestar-devolver';
+import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
+import { M } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-prestamos-list',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatTabsModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatTabsModule,
+    MatTooltipModule,
+    MatDialogClose,
+  ],
   templateUrl: './prestamos-list.html',
   styleUrl: './prestamos-list.scss',
 })
 export class PrestamosListComponent implements OnInit {
   private prestamoService = inject(PrestamoService);
   private dialog = inject(MatDialog);
+  private confirmDialog = inject(ConfirmDialogService);
 
   todas: objeto[] = [];
   prestadas: objeto[] = [];
@@ -58,10 +70,19 @@ export class PrestamosListComponent implements OnInit {
     });
   }
 
-  eliminar(id: number): void {
-    if (confirm('¿Eliminar esta herramienta?')) {
-      this.prestamoService.eliminarObjeto(id);
-      this.cargarDatos();
-    }
+  eliminar(id: number, nombre: string): void {
+    this.confirmDialog
+      .confirm({
+        title: 'Eliminar herramienta',
+        message: `¿Estás seguro de que quieres eliminar "${nombre}"?`,
+        confirmText: 'Sí, eliminar',
+        cancelText: 'Cancelar',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.prestamoService.eliminarObjeto(id);
+          this.cargarDatos();
+        }
+      });
   }
 }

@@ -17,22 +17,37 @@
 
         <div class="campo">
           <label>Prestado a</label>
-          <input [(ngModel)]="entidadAjena" placeholder="Nombre o entidad" />
+          <input
+            [(ngModel)]="entidadAjena"
+            (input)="validarEntidadAjena()"
+            (blur)="validarEntidadAjena()"
+            placeholder="Nombre o entidad"
+          />
+          <small class="error" *ngIf="errorEntidadAjena">{{ errorEntidadAjena }}</small>
         </div>
 
         <div class="campo">
           <label>Anotaciones</label>
           <textarea
             [(ngModel)]="anotacionesPrestamo"
+            (input)="validarAnotacionesPrestamo()"
+            (blur)="validarAnotacionesPrestamo()"
             rows="2"
             placeholder="Estado de la herramienta"
           ></textarea>
+          <small class="error" *ngIf="errorAnotacionesPrestamo">{{
+            errorAnotacionesPrestamo
+          }}</small>
         </div>
 
         <button
           class="btn-prestar"
           (click)="prestar()"
-          [disabled]="!herramientaSeleccionadaId || !entidadAjena"
+          [disabled]="
+            !herramientaSeleccionadaId ||
+            !entidadAjena.trim() ||
+            anotacionesPrestamo.trim().length < 5
+          "
         >
           Confirmar préstamo
         </button>
@@ -56,12 +71,21 @@
           <label>Anotaciones</label>
           <textarea
             [(ngModel)]="anotacionesDevolucion"
+            (input)="validarAnotacionesDevolucion()"
+            (blur)="validarAnotacionesDevolucion()"
             rows="2"
             placeholder="Cómo se devuelve, si tiene daños"
           ></textarea>
+          <small class="error" *ngIf="errorAnotacionesDevolucion">{{
+            errorAnotacionesDevolucion
+          }}</small>
         </div>
 
-        <button class="btn-devolver" (click)="devolver()" [disabled]="!herramientaDevueltaId">
+        <button
+          class="btn-devolver"
+          (click)="devolver()"
+          [disabled]="!herramientaDevueltaId || anotacionesDevolucion.trim().length < 5"
+        >
           Confirmar devolución
         </button>
       </div>

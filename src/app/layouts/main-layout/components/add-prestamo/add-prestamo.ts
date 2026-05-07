@@ -1,19 +1,27 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { PrestamoService } from '../../services/prestamo.service';
 
 @Component({
   selector: 'app-add-prestamo',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, FormsModule],
+  imports: [
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    CommonModule,
+  ],
   templateUrl: './add-prestamo.html',
   styleUrl: './add-prestamo.scss',
 })
-export class AddPrestamo implements OnInit {
+export class AddPrestamo {
   private dialogRef = inject(MatDialogRef<AddPrestamo>);
   private prestamoService = inject(PrestamoService);
   private cdr = inject(ChangeDetectorRef);
@@ -28,12 +36,6 @@ export class AddPrestamo implements OnInit {
     sitioGuardado: '',
   };
 
-  ngOnInit(): void {
-    this.validarNombre();
-    this.validarDescripcion();
-    this.validarUbicacion();
-  }
-
   validarNombre(): void {
     if (!this.nombre.trim()) {
       this.errores.nombre = 'El nombre es obligatorio';
@@ -42,6 +44,7 @@ export class AddPrestamo implements OnInit {
     } else {
       this.errores.nombre = '';
     }
+    this.cdr.detectChanges();
   }
 
   validarDescripcion(): void {
@@ -52,6 +55,7 @@ export class AddPrestamo implements OnInit {
     } else {
       this.errores.descripcion = '';
     }
+    this.cdr.detectChanges();
   }
 
   validarUbicacion(): void {
@@ -60,6 +64,7 @@ export class AddPrestamo implements OnInit {
     } else {
       this.errores.sitioGuardado = '';
     }
+    this.cdr.detectChanges();
   }
 
   isFormValid(): boolean {
@@ -77,8 +82,6 @@ export class AddPrestamo implements OnInit {
     this.validarNombre();
     this.validarDescripcion();
     this.validarUbicacion();
-    this.cdr.markForCheck();
-    this.cdr.detectChanges();
 
     if (this.errores.nombre || this.errores.descripcion || this.errores.sitioGuardado) {
       return;

@@ -38,5 +38,5 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">Cancelar</button>
-  <button class="btn-guardar" (click)="confirm()">Guardar</button>
+  <button class="btn-guardar" (click)="confirm()" [disabled]="!isFormValid()">Guardar</button>
 </mat-dialog-actions>
