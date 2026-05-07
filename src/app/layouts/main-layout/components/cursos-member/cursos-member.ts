@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { Component, inject, Inject } from '@angular/core';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { CursoService, Curso } from '../../services/curso';
 
@@ -14,7 +14,13 @@ export class CursosMember {
   private dialogRef = inject(MatDialogRef<CursosMember>);
   cursoService = inject(CursoService);
 
-  apuntados = new Set<number>(); // ids de cursos en los que está el socio
+  apuntados = new Set<number>();
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { cursosActuales: number[] }) {
+    if (data?.cursosActuales) {
+      data.cursosActuales.forEach(id => this.apuntados.add(id));
+    }
+  }
 
   toggleCurso(curso: Curso) {
     if (this.apuntados.has(curso.id)) {
@@ -29,8 +35,9 @@ export class CursosMember {
   }
 
   close() {
-    this.dialogRef.close(Array.from(this.apuntados));
+    this.dialogRef.close(null);
   }
+
   guardar() {
     this.dialogRef.close(Array.from(this.apuntados));
   }

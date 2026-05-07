@@ -24,6 +24,7 @@ interface Socio {
   fechaVenc: string;
   profesor: string;
   contrasena: string;
+  cursos: number[];
   selected: boolean;
 }
 
@@ -52,9 +53,6 @@ export class MainLayout {
   estadoFiltro: 'todos' | 'Activo' | 'Inactivo' = 'todos';
   textoBusqueda = '';
 
-
-
-
   filtros = [
     { label: 'Activo', activo: false },
     { label: 'Inactivo', activo: false },
@@ -77,6 +75,7 @@ export class MainLayout {
       fechaVenc: '05/01/2027',
       profesor: 'Si',
       contrasena: 'vW2O8a9z7',
+      cursos: [],
       selected: false,
     },
     {
@@ -90,6 +89,7 @@ export class MainLayout {
       fechaVenc: '01/01/2026',
       profesor: 'No',
       contrasena: 'pass123',
+      cursos: [],
       selected: false,
     },
   ];
@@ -97,12 +97,10 @@ export class MainLayout {
   get sociosFiltrados(): Socio[] {
     let lista = this.socios;
 
-    // filtro de estado
     if (this.estadoFiltro !== 'todos') {
       lista = lista.filter(s => s.estado === this.estadoFiltro);
     }
 
-    // filtro de búsqueda
     if (this.textoBusqueda.trim()) {
       const texto = this.textoBusqueda.toLowerCase().trim();
       lista = lista.filter(s =>
@@ -196,16 +194,17 @@ export class MainLayout {
       if (esNuevo) {
         this.socios.push({
           id: String(this.socios.length + 1).padStart(2, '0'),
-          nombres:   result.nombres,
-          apellidos: result.apellidos,
-          correo:    result.correo,
-          tel:       result.tel,
-          dni:       result.dni,
-          estado:    result.estado ?? 'Activo',
-          fechaVenc: '',
-          profesor:  result.profesor ?? 'No',
+          nombres:    result.nombres,
+          apellidos:  result.apellidos,
+          correo:     result.correo,
+          tel:        result.tel,
+          dni:        result.dni,
+          estado:     result.estado ?? 'Activo',
+          fechaVenc:  '',
+          profesor:   result.profesor ?? 'No',
           contrasena: '',
-          selected: false,
+          cursos:     [],
+          selected:   false,
         });
       } else {
         const index = this.socios.indexOf(socio!);
@@ -214,18 +213,27 @@ export class MainLayout {
     });
   }
 
-  // Eliminar un socio concreto (desde el menú de 3 puntos)
   onEliminar(socio?: Socio) {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (!confirmed) return;
       if (socio) {
-        // Elimina el socio concreto
         this.socios = this.socios.filter(s => s !== socio);
       } else {
-        // Elimina todos los seleccionados
         this.socios = this.socios.filter(s => !s.selected);
       }
+    });
+  }
+
+  onCurso(socio: Socio) {
+    const dialogRef = this.dialog.open(CursosMember, {
+      width: '440px',
+      data: { cursosActuales: socio.cursos },
+    });
+    dialogRef.afterClosed().subscribe((result: number[]) => {
+      if (!result) return;
+      const index = this.socios.indexOf(socio);
+      this.socios[index] = { ...socio, cursos: result };
     });
   }
 
@@ -233,16 +241,8 @@ export class MainLayout {
     this.router.navigate(['/register']);
   }
 
-  onModificar() {
-    console.log('Modificar');
-  }
-
   openAddCurso() {
     this.dialog.open(AddCurso, { width: '400px' });
-  }
-
-  onCurso() {
-    this.dialog.open(CursosMember, { width: '440px' });
   }
 
   onPagos() {
