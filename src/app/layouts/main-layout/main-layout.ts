@@ -12,6 +12,7 @@ import { Member } from './components/member/member';
 import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
+import { RouterModule } from '@angular/router';
 
 interface Socio {
   id: string;
@@ -23,8 +24,9 @@ interface Socio {
   estado: string;
   fechaVenc: string;
   profesor: string;
-  contrasena: string;
   selected: boolean;
+  cursos: string[];
+  cursosAbiertos: boolean;
 }
 
 @Component({
@@ -37,7 +39,8 @@ interface Socio {
     MatIconModule,
     MatChipsModule,
     CommonModule,
-    FormsModule, // ← añadir para ngModel
+    FormsModule,
+    RouterModule,
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
@@ -68,7 +71,78 @@ export class MainLayout {
       estado: 'Activo',
       fechaVenc: '05/01/2027',
       profesor: 'Si',
-      contrasena: 'vW2O8a9z7',
+      cursos: ['Yoga', 'Pilates'],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '01',
+      nombres: 'Felipe Carlos',
+      apellidos: 'Guzmán Segundo',
+      correo: 'FelipeCarlosGuzman@gmail.com',
+      tel: '+34 652 25 35 97',
+      dni: '52316377W',
+      estado: 'Activo',
+      fechaVenc: '05/01/2027',
+      profesor: 'Si',
+      cursos: ['Yoga', 'Pilates'],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '02',
+      nombres: 'María José',
+      apellidos: 'Rodríguez Blanco',
+      correo: 'mariajose.rodriguez@gmail.com',
+      tel: '+34 611 44 55 66',
+      dni: '30456789B',
+      estado: 'Activo',
+      fechaVenc: '12/03/2026',
+      profesor: 'No',
+      cursos: ['Pilates'],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '03',
+      nombres: 'Alejandro',
+      apellidos: 'Torres Vega',
+      correo: 'alejandro.torres@gmail.com',
+      tel: '+34 633 77 88 99',
+      dni: '45678901C',
+      estado: 'Inactivo',
+      fechaVenc: '01/06/2025',
+      profesor: 'No',
+      cursos: [],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '04',
+      nombres: 'Laura',
+      apellidos: 'Sánchez Mora',
+      correo: 'laura.sanchez@gmail.com',
+      tel: '+34 699 12 34 56',
+      dni: '67890123D',
+      estado: 'Activo',
+      fechaVenc: '20/09/2026',
+      profesor: 'Si',
+      cursos: ['Yoga', 'Zumba', 'Spinning'],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '05',
+      nombres: 'Carlos Antonio',
+      apellidos: 'Jiménez Ruiz',
+      correo: 'carlos.jimenez@gmail.com',
+      tel: '+34 655 98 76 54',
+      dni: '89012345E',
+      estado: 'Activo',
+      fechaVenc: '30/11/2026',
+      profesor: 'No',
+      cursos: ['Spinning'],
+      cursosAbiertos: false,
       selected: false,
     },
   ];
@@ -89,6 +163,7 @@ export class MainLayout {
     const checked = (event.target as HTMLInputElement).checked;
     this.socios.forEach((s) => (s.selected = checked));
   }
+  fabAbierto = false;
 
   onCheckChange(): void {}
 
@@ -135,7 +210,8 @@ export class MainLayout {
           estado: result.estado ?? 'Activo',
           fechaVenc: '',
           profesor: result.profesor ?? 'No',
-          contrasena: '',
+          cursos: result.cursos,
+          cursosAbiertos: result.cursosAbiertos,
           selected: false,
         });
       } else {
@@ -147,6 +223,9 @@ export class MainLayout {
 
   goToRegister() {
     this.router.navigate(['/register']);
+  }
+  cursos() {
+    this.router.navigate(['/cursos']);
   }
   onEliminar() {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
@@ -173,3 +252,4 @@ export class MainLayout {
     console.log('Correo', this.selectedSocios);
   }
 }
+
