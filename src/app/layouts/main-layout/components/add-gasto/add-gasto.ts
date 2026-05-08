@@ -41,13 +41,10 @@ export class AddGastoComponent {
   descripcion = '';
   fecha = '';
   fechaDate: Date | null = null;
-  errorMonto = '';
 
-  onFechaChange(event: any): void {
-    if (event.value) {
-      this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
-    }
-  }
+  errorMonto = '';
+  errorDescripcion = '';
+  errorFecha = '';
 
   validarMonto(): boolean {
     if (this.monto === null || this.monto === undefined) {
@@ -62,19 +59,46 @@ export class AddGastoComponent {
     return true;
   }
 
-  confirm(): void {
-    if (!this.validarMonto()) {
-      return;
+  validarDescripcion(): boolean {
+    if (!this.descripcion.trim()) {
+      this.errorDescripcion = 'La descripción es obligatoria';
+      return false;
+    } else if (this.descripcion.trim().length < 5) {
+      this.errorDescripcion = 'La descripción debe tener al menos 5 caracteres';
+      return false;
     }
+    this.errorDescripcion = '';
+    return true;
+  }
 
-    if (!this.monto || !this.descripcion.trim() || !this.fecha.trim()) {
-      return;
+  validarFecha(): boolean {
+    if (!this.fechaDate) {
+      this.errorFecha = 'La fecha es obligatoria';
+      return false;
     }
+    this.errorFecha = '';
+    return true;
+  }
+
+  onFechaChange(event: any): void {
+    if (event.value) {
+      this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
+    }
+  }
+
+  isFormValid(): boolean {
+    return this.validarMonto() && this.validarDescripcion() && this.validarFecha();
+  }
+
+  confirm(): void {
+    if (!this.isFormValid()) return;
+
     this.gastoService.addGasto({
-      monto: this.monto,
+      monto: this.monto!,
       descripcion: this.descripcion.trim(),
       fechaGasto: this.fecha,
     });
+
     this.dialogRef.close(true);
   }
 

@@ -8,6 +8,7 @@
       step="0.01"
       [(ngModel)]="monto"
       (blur)="validarMonto()"
+      (input)="validarMonto()"
       placeholder="Ej: 100.00"
     />
     <small class="error" *ngIf="errorMonto">{{ errorMonto }}</small>
@@ -15,7 +16,13 @@
 
   <div class="campo">
     <label>Descripción</label>
-    <input [(ngModel)]="descripcion" placeholder="Ej: Donación, cuota..." />
+    <input
+      [(ngModel)]="descripcion"
+      (blur)="validarDescripcion()"
+      (input)="validarDescripcion()"
+      placeholder="Ej: Donación, cuota..."
+    />
+    <small class="error" *ngIf="errorDescripcion">{{ errorDescripcion }}</small>
   </div>
 
   <div class="campo">
@@ -25,9 +32,11 @@
         matInput
         [matDatepicker]="picker"
         [(ngModel)]="fechaDate"
+        (blur)="validarFecha()"
         (dateChange)="onFechaChange($event)"
-        placeholder="dd/mm/yyyy"
+        placeholder="dd/mm/yyyy "
       />
+      <small class="error" *ngIf="errorFecha">{{ errorFecha }}</small>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
@@ -36,7 +45,5 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">Cancelar</button>
-  <button class="btn-guardar" (click)="confirm()" [disabled]="!monto || !descripcion || !fecha">
-    Guardar
-  </button>
+  <button class="btn-guardar" (click)="confirm()" [disabled]="!isFormValid()">Guardar</button>
 </mat-dialog-actions>
