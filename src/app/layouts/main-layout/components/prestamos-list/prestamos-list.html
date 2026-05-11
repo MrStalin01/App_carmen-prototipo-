@@ -1,4 +1,19 @@
 <div class="prestamos-container">
+  <div class="buscar-wrapper">
+    <mat-form-field appearance="outline" class="buscar-input">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Buscar herramienta</mat-label>
+      <input
+        matInput
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+        placeholder="Ej: Martillo, Taladro..."
+      />
+      <button mat-icon-button matSuffix *ngIf="searchTerm()" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
   <div class="botones">
     <button class="btn-add" (click)="abrirAddPrestamo()">Añadir herramienta</button>
     <button class="btn-prestar" (click)="abrirPrestarDevolver()">Prestar / Devolver</button>
@@ -18,7 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of todas">
+            <tr *ngFor="let item of todasFiltradas()">
               <td>{{ item.nombre }}</td>
               <td>{{ item.descripcion }}</td>
               <td>{{ item.sitioGuardado }}</td>
@@ -59,7 +74,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of prestadas">
+            <tr *ngFor="let item of prestadasFiltradas()">
               <td>{{ item.nombre }}</td>
               <td>{{ item.descripcion }}</td>
               <td>{{ item.sitioGuardado }}</td>
@@ -93,7 +108,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of disponibles">
+            <tr *ngFor="let item of disponiblesFiltradas()">
               <td>{{ item.nombre }}</td>
               <td>{{ item.descripcion }}</td>
               <td>{{ item.sitioGuardado }}</td>

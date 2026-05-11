@@ -1,4 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +13,6 @@ import { PrestamoService, objeto } from '../../services/prestamo.service';
 import { AddPrestamo } from '../add-prestamo/add-prestamo';
 import { PrestarDevolverComponent } from '../prestar-devolver/prestar-devolver';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
-import { M } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-prestamos-list',
@@ -23,6 +25,9 @@ import { M } from '@angular/cdk/keycodes';
     MatTabsModule,
     MatTooltipModule,
     MatDialogClose,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   templateUrl: './prestamos-list.html',
   styleUrl: './prestamos-list.scss',
@@ -32,18 +37,39 @@ export class PrestamosListComponent implements OnInit {
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
 
-  todas: objeto[] = [];
-  prestadas: objeto[] = [];
-  disponibles: objeto[] = [];
+  todas = signal<objeto[]>([]);
+  prestadas = signal<objeto[]>([]);
+  disponibles = signal<objeto[]>([]);
+  searchTerm = signal('');
+
+  todasFiltradas = computed(() =>
+    this.todas().filter((h) => h.nombre.toLowerCase().includes(this.searchTerm().toLowerCase())),
+  );
+
+  prestadasFiltradas = computed(() =>
+    this.prestadas().filter((h) =>
+      h.nombre.toLowerCase().includes(this.searchTerm().toLowerCase()),
+    ),
+  );
+
+  disponiblesFiltradas = computed(() =>
+    this.disponibles().filter((h) =>
+      h.nombre.toLowerCase().includes(this.searchTerm().toLowerCase()),
+    ),
+  );
 
   ngOnInit(): void {
     this.cargarDatos();
   }
 
   cargarDatos(): void {
-    this.todas = this.prestamoService.getObjetos();
-    this.prestadas = this.prestamoService.getPrestados();
-    this.disponibles = this.prestamoService.getDisponibles();
+    this.todas.set(this.prestamoService.getObjetos());
+    this.prestadas.set(this.prestamoService.getPrestados());
+    this.disponibles.set(this.prestamoService.getDisponibles());
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
   }
 
   abrirAddPrestamo(): void {
