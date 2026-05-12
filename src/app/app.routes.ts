@@ -8,7 +8,7 @@ export const routes: Routes = [
   },
   {
     path: 'register',
-    loadComponent: () => import('./layouts/auth-layout/components/register/register').then(c => c.Register)
+    loadComponent: () => import('./layouts/auth-layout/components/login/register').then(c => c.Register)
   },
   {
     path: 'main',

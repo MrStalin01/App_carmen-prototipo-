@@ -50,6 +50,12 @@ export class MainLayout {
   private router = inject(Router);
 
   filtrosAbiertos = false;
+  sortColumn: 'nombres' | 'apellidos' | null = null;
+  sortAsc = true;
+  estadoFiltro: 'todos' | 'Activo' | 'Inactivo' = 'todos';
+  profesorFiltro: 'todos' | 'Si' | 'No' = 'todos';
+  textoBusqueda = '';
+
   filtros = [
     { label: 'Activo', activo: false },
     { label: 'Inactivo', activo: false },
@@ -146,30 +152,89 @@ export class MainLayout {
       selected: false,
     },
   ];
-  //Aqui para saber si estan todos marcados, SE GUARDA EN LA VARIABLE SOCIO
-  get allSelected(): boolean {
-    return this.socios.length > 0 && this.socios.every((s) => s.selected);
+
+  get sociosFiltrados(): Socio[] {
+    let lista = this.socios;
+
+    if (this.estadoFiltro !== 'todos') {
+      lista = lista.filter(s => s.estado === this.estadoFiltro);
+    }
+
+    if (this.profesorFiltro !== 'todos') {
+      lista = lista.filter(s => s.profesor === this.profesorFiltro);
+    }
+
+    if (this.textoBusqueda.trim()) {
+      const texto = this.textoBusqueda.toLowerCase().trim();
+      lista = lista.filter(s =>
+        s.nombres.toLowerCase().includes(texto)   ||
+        s.apellidos.toLowerCase().includes(texto) ||
+        s.correo.toLowerCase().includes(texto)    ||
+        s.dni.toLowerCase().includes(texto)
+      );
+    }
+
+    return lista;
   }
-  //Esto para saber si hay alguno que no esta seleccionado, SE GUARDA EN LA VARIABLE SOCIO
+
+  get allSelected(): boolean {
+    return this.sociosFiltrados.length > 0 && this.sociosFiltrados.every(s => s.selected);
+  }
+
   get someSelected(): boolean {
-    return this.socios.some((s) => s.selected) && !this.allSelected;
+    return this.sociosFiltrados.some(s => s.selected) && !this.allSelected;
   }
 
   get selectedSocios(): Socio[] {
-    return this.socios.filter((s) => s.selected);
+    return this.socios.filter(s => s.selected);
   }
 
   toggleAll(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.socios.forEach((s) => (s.selected = checked));
+    this.sociosFiltrados.forEach(s => (s.selected = checked));
   }
   fabAbierto = false;
 
   onCheckChange(): void {}
 
+  filtrarEstado() {
+    if (this.estadoFiltro === 'todos') {
+      this.estadoFiltro = 'Activo';
+    } else if (this.estadoFiltro === 'Activo') {
+      this.estadoFiltro = 'Inactivo';
+    } else {
+      this.estadoFiltro = 'todos';
+    }
+  }
+
+  filtrarProfesor() {
+    if (this.profesorFiltro === 'todos') {
+      this.profesorFiltro = 'Si';
+    } else if (this.profesorFiltro === 'Si') {
+      this.profesorFiltro = 'No';
+    } else {
+      this.profesorFiltro = 'todos';
+    }
+  }
+
+  sortBy(col: 'nombres' | 'apellidos') {
+    if (this.sortColumn === col) {
+      this.sortAsc = !this.sortAsc;
+    } else {
+      this.sortColumn = col;
+      this.sortAsc = true;
+    }
+    this.socios.sort((a, b) => {
+      const valA = a[col].toLowerCase();
+      const valB = b[col].toLowerCase();
+      return this.sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    });
+  }
+
   toggleFiltros() {
     this.filtrosAbiertos = !this.filtrosAbiertos;
   }
+
   toggleChip(filtro: any) {
     filtro.activo = !filtro.activo;
   }
@@ -189,6 +254,7 @@ export class MainLayout {
       }
     });
   }
+
   openMember(socio?: Socio) {
     const esNuevo = !socio;
     const dialogRef = this.dialog.open(Member, {
@@ -227,29 +293,44 @@ export class MainLayout {
   cursos() {
     this.router.navigate(['/cursos']);
   }
-  onEliminar() {
+  onEliminar(socio?: Socio) {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (!confirmed) return;
-      console.log('Miembro eliminado'); // aquí llamarás al servicio
+      if (socio) {
+        this.socios = this.socios.filter((s) => s !== socio);
+      } else {
+        this.socios = this.socios.filter((s) => !s.selected);
+      }
+    });
+  }
+///menu  de teres puntos
+  onCurso(socio: Socio) {
+    const dialogRef = this.dialog.open(CursosMember, {
+      width: '440px',
+      data: { cursosActuales: socio.cursos },
+    });
+    dialogRef.afterClosed().subscribe((result: string[]) => {
+      if (!result) return;
+      const index = this.socios.indexOf(socio);
+      this.socios[index] = { ...socio, cursos: result };
     });
   }
   onModificar() {
     console.log('Modificar');
   }
+
   openAddCurso() {
     this.dialog.open(AddCurso, { width: '400px' });
   }
 
-  // botón "Curso" en el menú de 3 puntos
-  onCurso() {
-    this.dialog.open(CursosMember, { width: '440px' });
-  }
   onPagos() {
     console.log('Pagos');
   }
+
   onCorreo() {
     console.log('Correo', this.selectedSocios);
   }
 }
+
 
