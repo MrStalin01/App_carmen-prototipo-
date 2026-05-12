@@ -9,7 +9,7 @@ import { AuthService } from '../../../../core/services/usuarios/auth.service';
 import { AlertasService } from '../../../../core/utils/alertas.service'; // 👈
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-login',
   standalone: true,
   imports: [
     ReactiveFormsModule,

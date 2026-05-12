@@ -18,4 +18,6 @@ export class SociosService {
   guardar(payload: any): Observable<any> {
     return this.http.post<any>(`${this.URL}/socio/add`, payload);
   }
+
+
 }

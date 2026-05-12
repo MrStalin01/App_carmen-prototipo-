@@ -10,25 +10,61 @@
 
 <mat-dialog-content [formGroup]="form">
   <div class="fields">
+
     <mat-form-field appearance="outline">
-      <input matInput formControlName="name" placeholder="Nombre" />
+      <input matInput formControlName="name" id="name" name="name" placeholder="Nombre" />
+      @if (form.get('name')?.touched) {
+        @if (form.get('name')?.errors?.['required']) {
+          <mat-error>El nombre es obligatorio</mat-error>
+        }
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <input matInput formControlName="apellidos" placeholder="Apellidos" />
+      <input matInput formControlName="apellidos" id="apellidos" name="apellidos" placeholder="Apellidos" />
+      @if (form.get('apellidos')?.touched) {
+        @if (form.get('apellidos')?.errors?.['required']) {
+          <mat-error>Los apellidos son obligatorios</mat-error>
+        }
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <input matInput formControlName="email" type="email" placeholder="Email" />
+      <input matInput formControlName="email" id="email" name="email" type="email" placeholder="Email" />
+      @if (form.get('email')?.touched) {
+        @if (form.get('email')?.errors?.['required']) {
+          <mat-error>El correo es obligatorio</mat-error>
+        }
+        @if (form.get('email')?.errors?.['extension']) {
+          <mat-error>Solo aceptamos gmail y hotmail</mat-error>
+        }
+        @if (form.get('email')?.errors?.['customEmail']) {
+          <mat-error>Correo no válido</mat-error>
+        }
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <input matInput formControlName="phone" placeholder="Teléfono" />
+      <input matInput formControlName="phone" id="phone" name="phone" placeholder="Teléfono" />
+      @if (form.get('phone')?.touched) {
+        @if (form.get('phone')?.errors?.['required']) {
+          <mat-error>El teléfono es obligatorio</mat-error>
+        }
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <input matInput formControlName="dni" placeholder="DNI/NIE" />
+      <input matInput formControlName="dni" id="dni" name="dni" placeholder="DNI/NIE" />
+      @if (form.get('dni')?.touched) {
+        @if (form.get('dni')?.errors?.['required']) {
+          <mat-error>El DNI es obligatorio</mat-error>
+        }
+        @if (form.get('dni')?.errors?.['extension']) {
+          <mat-error>Formato inválido (ej: 12345678A)</mat-error>
+        }
+      }
     </mat-form-field>
+
     <div class="radio-group">
       <span class="radio-label">¿Profesor?</span>
       <mat-radio-group formControlName="profesor">
@@ -36,8 +72,10 @@
         <mat-radio-button [value]="false">No</mat-radio-button>
       </mat-radio-group>
     </div>
+
   </div>
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
   <button
     type="button"
@@ -49,8 +87,5 @@
     {{ form.get('activo')?.value ? 'Activo' : 'Inactivo' }}
   </button>
 
-  <button class="btn-activate" (click)="guardar()">
-    {{ esEdicion() ? 'Guardar' : 'Guardar' }}
-  </button>
-
+  <button class="btn-activate" (click)="guardar()">Guardar</button>
 </mat-dialog-actions>

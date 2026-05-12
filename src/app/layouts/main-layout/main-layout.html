@@ -72,7 +72,11 @@
           @if (estadoFiltro === 'Activo') { ✅ }
           @if (estadoFiltro === 'Inactivo') { ❌ }
         </th>
-        <th>Profesor</th>
+        <th style="cursor:pointer" (click)="filtrarProfesor()">
+          Profesor
+          @if (profesorFiltro === 'Si') { ✅ }
+          @if (profesorFiltro === 'No') { ❌ }
+        </th>
         <th>Contraseña</th>
         <th class="text-end"><i class="bi bi-cloud-arrow-down-fill"></i></th>
       </tr>
@@ -102,7 +106,13 @@
                 </div>
               </div>
             </td>
-            <td>{{ socio.profesor }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div style="width:20px;height:20px;border-radius:50%;"
+                     [style.background-color]="socio.profesor === 'Si' ? '#6CAD6A' : '#aaa'"></div>
+                <div class="fw-bold">{{ socio.profesor }}</div>
+              </div>
+            </td>
             <td>{{ socio.contrasena }}</td>
             <td class="text-end">
               <button class="btn btn-link text-dark p-0" [matMenuTriggerFor]="menu">
