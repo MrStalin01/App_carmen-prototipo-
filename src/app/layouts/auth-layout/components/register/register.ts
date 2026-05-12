@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/usuarios/auth.service';
-import { AlertasService } from '../../../../core/utils/alertas.service'; // 👈
+import { AlertasService } from '../../../../core/utils/alertas.service'; 
 
 @Component({
   selector: 'app-register',

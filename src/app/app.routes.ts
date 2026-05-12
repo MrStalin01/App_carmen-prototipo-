@@ -30,4 +30,9 @@ export const routes: Routes = [
     path: 'main',
     loadComponent: () => import('./layouts/main-layout/main-layout').then((c) => c.MainLayout),
   },
+  {
+    path: 'cursos',
+    loadComponent: () =>
+      import('./layouts/main-layout/components/cursos/cursos').then((c) => c.CursosComponent),
+  },
 ];
