@@ -1,4 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -11,7 +14,15 @@ import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service'
 @Component({
   selector: 'app-lista-ingresos',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatTableModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatTableModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+  ],
   templateUrl: './lista-ingresos.html',
   styleUrl: './lista-ingresos.scss',
 })
@@ -20,27 +31,37 @@ export class ListaIngresosComponent implements OnInit {
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
 
-  ingresos: Ingreso[] = [];
+  ingresos = signal<Ingreso[]>([]);
+  searchTerm = signal('');
+
+  ingresosFiltrados = computed(() =>
+    this.ingresos().filter((ingreso) => {
+      const term = this.searchTerm().toLowerCase();
+      return (
+        ingreso.descripcion.toLowerCase().includes(term) ||
+        ingreso.fechaIngreso.toLowerCase().includes(term)
+      );
+    }),
+  );
 
   displayedColumns: string[] = ['fecha', 'descripcion', 'monto', 'acciones'];
 
   ngOnInit(): void {
-    this.cargarIngresos();
+    this.cargarDatos();
   }
 
-  cargarIngresos(): void {
-    this.ingresos = [...this.ingresoService.getIngresos()];
+  cargarDatos(): void {
+    this.ingresos.set(this.ingresoService.getIngresos());
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
   }
 
   abrirAddIngreso(): void {
-    const dialogRef = this.dialog.open(AddIngresoComponent, {
-      width: '450px',
-    });
-
+    const dialogRef = this.dialog.open(AddIngresoComponent, { width: '500px' });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.cargarIngresos();
-      }
+      if (result) this.cargarDatos();
     });
   }
 
@@ -55,7 +76,7 @@ export class ListaIngresosComponent implements OnInit {
       .subscribe((confirmed) => {
         if (confirmed) {
           this.ingresoService.deleteIngreso(id);
-          this.cargarIngresos();
+          this.cargarDatos();
         }
       });
   }

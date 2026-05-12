@@ -46,7 +46,15 @@ export class AddIngresoComponent {
   errorFecha = '';
 
   validarMonto(): boolean {
-    if (this.monto === null || this.monto <= 0) {
+    if (this.monto === null || this.monto === undefined) {
+      this.errorMonto = 'El monto es obligatorio y debe ser numérico';
+      return false;
+    }
+    if (isNaN(this.monto)) {
+      this.errorMonto = 'El monto debe ser un número válido';
+      return false;
+    }
+    if (this.monto <= 0) {
       this.errorMonto = 'El monto debe ser mayor que 0';
       return false;
     }
@@ -80,7 +88,11 @@ export class AddIngresoComponent {
 
   onFechaChange(event: any): void {
     if (event.value) {
+      this.fechaDate = event.value;
       this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'es-ES');
+      this.errorFecha = '';
+    } else {
+      this.errorFecha = 'La fecha es obligatoria';
     }
   }
 
