@@ -18,8 +18,8 @@
     <label>Descripción</label>
     <input
       [(ngModel)]="descripcion"
-      (blur)="validarDescripcion()"
       (input)="validarDescripcion()"
+      (blur)="validarDescripcion()"
       placeholder="Ej: Donación, cuota..."
     />
     <small class="error" *ngIf="errorDescripcion">{{ errorDescripcion }}</small>
@@ -32,8 +32,8 @@
         matInput
         [matDatepicker]="picker"
         [(ngModel)]="fechaDate"
-        (blur)="validarFecha()"
         (dateChange)="onFechaChange($event)"
+        (blur)="validarFecha()"
         placeholder="dd/mm/yyyy "
       />
       <small class="error" *ngIf="errorFecha">{{ errorFecha }}</small>

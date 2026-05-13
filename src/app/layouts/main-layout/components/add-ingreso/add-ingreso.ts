@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { NativeDateAdapter, MatNativeDateModule, DateAdapter } from '@angular/material/core';
 import { MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { formatDate } from '@angular/common';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-add-ingreso',
@@ -35,6 +36,7 @@ import { formatDate } from '@angular/common';
 export class AddIngresoComponent {
   private dialogRef = inject(MatDialogRef<AddIngresoComponent>);
   private ingresoService = inject(GastoIngresoService);
+  private cdr = inject(ChangeDetectorRef);
 
   monto: number | null = null;
   descripcion = '';
@@ -57,9 +59,11 @@ export class AddIngresoComponent {
     if (this.monto <= 0) {
       this.errorMonto = 'El monto debe ser mayor que 0';
       return false;
+    } else {
+      this.errorMonto = '';
+      return true;
     }
-    this.errorMonto = '';
-    return true;
+    this.cdr.detectChanges();
   }
 
   validarDescripcion(): boolean {
@@ -88,11 +92,7 @@ export class AddIngresoComponent {
 
   onFechaChange(event: any): void {
     if (event.value) {
-      this.fechaDate = event.value;
-      this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'es-ES');
-      this.errorFecha = '';
-    } else {
-      this.errorFecha = 'La fecha es obligatoria';
+      this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
     }
   }
 

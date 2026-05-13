@@ -1,8 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { GastoIngresoService, Gasto } from '../../services/gasto-ingreso.service';
@@ -17,6 +19,8 @@ import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service'
     CommonModule,
     MatButtonModule,
     MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatIconModule,
     MatTableModule,
     MatTooltipModule,
@@ -29,15 +33,27 @@ export class ListaGastosComponent implements OnInit {
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
 
-  gastos: Gasto[] = [];
+  gastos = signal<Gasto[]>([]);
+  searchTerm = signal('');
+
   displayedColumns: string[] = ['fecha', 'descripcion', 'monto', 'acciones'];
+
+  gastosFiltrados = computed(() =>
+    this.gastos().filter((gasto) => {
+      const term = this.searchTerm().toLowerCase();
+      return (
+        gasto.descripcion.toLowerCase().includes(term) ||
+        gasto.fechaGasto.toLowerCase().includes(term)
+      );
+    }),
+  );
 
   ngOnInit(): void {
     this.cargarGastos();
   }
 
   cargarGastos(): void {
-    this.gastos = [...this.gastoService.getGastos()];
+    this.gastos.set(this.gastoService.getGastos());
   }
 
   abrirAddGasto(): void {
@@ -66,5 +82,9 @@ export class ListaGastosComponent implements OnInit {
           this.cargarGastos();
         }
       });
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
   }
 }

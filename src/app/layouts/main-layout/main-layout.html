@@ -26,9 +26,17 @@
       <i class="bi bi-credit-card me-2"></i>
       <span>Pagos</span>
     </button>
-    <button class="action-bar-btn">
+    <button class="action-bar-btn" (click)="onPrestamos()">
       <i class="bi bi-file-earmark-text"></i>
       <span>Prestamos</span>
+    </button>
+    <button class="action-bar-btn" (click)="onGastos()">
+      <i class="bi bi-cash-stack"></i>
+      <span>Gastos</span>
+    </button>
+    <button class="action-bar-btn" (click)="onIngresos()">
+      <i class="bi bi-graph-up"></i>
+      <span>Ingresos</span>
     </button>
     <button class="action-bar-btn danger" (click)="cursos(); fabAbierto = false">
       <i class="bi bi-book"></i>
