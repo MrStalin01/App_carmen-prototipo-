@@ -66,9 +66,13 @@ export class MainLayout {
     { label: '9 → 0', activo: false },
   ];
 
+  // ── Array de cursos disponibles en la asociación ──────────────
+  // Cuando conectes con la API, rellena esto desde cursoService.getCursos()
+  cursosDisponibles: string[] = ['Yoga', 'Pilates', 'Zumba', 'Spinning'];
+
   socios: Socio[] = [
     {
-      id: '01',
+      id: '00',
       nombres: 'Felipe Carlos',
       apellidos: 'Guzmán Segundo',
       correo: 'FelipeCarlosGuzman@gmail.com',
@@ -151,26 +155,69 @@ export class MainLayout {
       cursosAbiertos: false,
       selected: false,
     },
+    {
+      id: '06',
+      nombres: 'Felipe Carlos',
+      apellidos: 'Guzmán Segundo',
+      correo: 'FelipeCarlosGuzman@gmail.com',
+      tel: '+34 652 25 35 97',
+      dni: '52316377W',
+      estado: 'Activo',
+      fechaVenc: '05/01/2027',
+      profesor: 'Si',
+      cursos: ['Yoga', 'Pilates'],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '07',
+      nombres: 'Felipe Carlos',
+      apellidos: 'Guzmán Segundo',
+      correo: 'FelipeCarlosGuzman@gmail.com',
+      tel: '+34 652 25 35 97',
+      dni: '52316377W',
+      estado: 'Activo',
+      fechaVenc: '05/01/2027',
+      profesor: 'Si',
+      cursos: ['Yoga', 'Pilates'],
+      cursosAbiertos: false,
+      selected: false,
+    },
+    {
+      id: '08',
+      nombres: 'María José',
+      apellidos: 'Rodríguez Blanco',
+      correo: 'mariajose.rodriguez@gmail.com',
+      tel: '+34 611 44 55 66',
+      dni: '30456789B',
+      estado: 'Activo',
+      fechaVenc: '12/03/2026',
+      profesor: 'No',
+      cursos: ['Pilates'],
+      cursosAbiertos: false,
+      selected: false,
+    },
   ];
 
   get sociosFiltrados(): Socio[] {
     let lista = this.socios;
 
     if (this.estadoFiltro !== 'todos') {
-      lista = lista.filter(s => s.estado === this.estadoFiltro);
+      lista = lista.filter((s) => s.estado === this.estadoFiltro);
     }
 
     if (this.profesorFiltro !== 'todos') {
-      lista = lista.filter(s => s.profesor === this.profesorFiltro);
+      lista = lista.filter((s) => s.profesor === this.profesorFiltro);
     }
 
     if (this.textoBusqueda.trim()) {
       const texto = this.textoBusqueda.toLowerCase().trim();
-      lista = lista.filter(s =>
-        s.nombres.toLowerCase().includes(texto)   ||
-        s.apellidos.toLowerCase().includes(texto) ||
-        s.correo.toLowerCase().includes(texto)    ||
-        s.dni.toLowerCase().includes(texto)
+      lista = lista.filter(
+        (s) =>
+          s.nombres.toLowerCase().includes(texto) ||
+          s.apellidos.toLowerCase().includes(texto) ||
+          s.correo.toLowerCase().includes(texto) ||
+          s.dni.toLowerCase().includes(texto),
       );
     }
 
@@ -178,21 +225,22 @@ export class MainLayout {
   }
 
   get allSelected(): boolean {
-    return this.sociosFiltrados.length > 0 && this.sociosFiltrados.every(s => s.selected);
+    return this.sociosFiltrados.length > 0 && this.sociosFiltrados.every((s) => s.selected);
   }
 
   get someSelected(): boolean {
-    return this.sociosFiltrados.some(s => s.selected) && !this.allSelected;
+    return this.sociosFiltrados.some((s) => s.selected) && !this.allSelected;
   }
 
   get selectedSocios(): Socio[] {
-    return this.socios.filter(s => s.selected);
+    return this.socios.filter((s) => s.selected);
   }
 
   toggleAll(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.sociosFiltrados.forEach(s => (s.selected = checked));
+    this.sociosFiltrados.forEach((s) => (s.selected = checked));
   }
+
   fabAbierto = false;
 
   onCheckChange(): void {}
@@ -238,7 +286,7 @@ export class MainLayout {
   toggleChip(filtro: any) {
     filtro.activo = !filtro.activo;
   }
-  //AQui el Padre recibe el socio y lo pasa al dialog
+
   openAddMember(socio?: Socio) {
     const dialogRef = this.dialog.open(AddMember, {
       width: '480px',
@@ -255,44 +303,22 @@ export class MainLayout {
     });
   }
 
-  openMember(socio?: Socio) {
-    const esNuevo = !socio;
-    const dialogRef = this.dialog.open(Member, {
-      width: '480px',
-      data: socio ?? null,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (!result) return;
-
-      if (esNuevo) {
-        this.socios.push({
-          id: String(this.socios.length + 1).padStart(2, '0'),
-          nombres: result.nombres,
-          apellidos: result.apellidos,
-          correo: result.correo,
-          tel: result.tel,
-          dni: result.dni,
-          estado: result.estado ?? 'Activo',
-          fechaVenc: '',
-          profesor: result.profesor ?? 'No',
-          cursos: result.cursos,
-          cursosAbiertos: result.cursosAbiertos,
-          selected: false,
-        });
-      } else {
-        const index = this.socios.indexOf(socio!);
-        this.socios[index] = { ...socio!, ...result };
-      }
+  openMember() {
+    const nextNumero = this.socios.length + 1;
+    this.dialog.open(Member, {
+      data: { nextNumero },
     });
   }
 
   goToRegister() {
     this.router.navigate(['/register']);
   }
+
+  // ── Navega a la vista de cursos ───────────────────────────────
   cursos() {
     this.router.navigate(['/cursos']);
   }
+
   onEliminar(socio?: Socio) {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
     dialogRef.afterClosed().subscribe((confirmed) => {
@@ -304,24 +330,24 @@ export class MainLayout {
       }
     });
   }
-///menu  de teres puntos
-  onCurso(socio: Socio) {
-    const dialogRef = this.dialog.open(CursosMember, {
-      width: '440px',
-      data: { cursosActuales: socio.cursos },
-    });
-    dialogRef.afterClosed().subscribe((result: string[]) => {
-      if (!result) return;
-      const index = this.socios.indexOf(socio);
-      this.socios[index] = { ...socio, cursos: result };
-    });
-  }
+
   onModificar() {
     console.log('Modificar');
   }
 
   openAddCurso() {
-    this.dialog.open(AddCurso, { width: '400px' });
+    // ── Usa cursosDisponibles, no cursos() ────────────────────
+    const dialogRef = this.dialog.open(AddCurso, {
+      data: { cursosExistentes: this.cursosDisponibles },
+    });
+
+    dialogRef.afterClosed().subscribe((nuevoCurso) => {
+      if (!nuevoCurso) return;
+      // Si el nombre es nuevo, lo añadimos al array para futuras aperturas
+      if (!this.cursosDisponibles.includes(nuevoCurso.nombre)) {
+        this.cursosDisponibles.push(nuevoCurso.nombre);
+      }
+    });
   }
 
   onPagos() {
@@ -331,6 +357,8 @@ export class MainLayout {
   onCorreo() {
     console.log('Correo', this.selectedSocios);
   }
+
+  submit() {
+    this.router.navigate(['/main']);
+  }
 }
-
-

@@ -1,15 +1,74 @@
-<h3 mat-dialog-title>Nuevo curso</h3>
-
+<h3 mat-dialog-title>Nueva Actividad</h3>
 <mat-dialog-content>
-  <div class="campo">
-    <label>Nombre del curso</label>
-    <input [(ngModel)]="nombreCurso" placeholder="Ej: Ingles" />
-  </div>
-</mat-dialog-content>
 
+  <div class="campo">
+    <label>Nombre de la actividad *</label>
+    <select [(ngModel)]="nombreSeleccionado" (ngModelChange)="onNombreChange()">
+      <option value="" disabled>— Selecciona una actividad —</option>
+      @for (c of cursosExistentes; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+
+      <option disabled>──────────────────</option>
+      <option value="__nuevo__">✏️ Añadir nueva actividad</option>
+    </select>
+  </div>
+
+
+  @if (mostrarInputNuevo) {
+    <div class="campo campo-nuevo-curso">
+      <label>Nombre de la nueva actividad *</label>
+      <input
+        [(ngModel)]="nombreNuevo"
+        placeholder="Ej: Inglés avanzado"
+        autofocus
+      />
+    </div>
+  }
+
+  <div class="campo">
+    <label>Descripción</label>
+    <textarea [(ngModel)]="curso.descripcion" placeholder="Describe el curso..." rows="3"></textarea>
+  </div>
+  <div class="campo">
+    <label>Ubicación</label>
+    <input [(ngModel)]="curso.ubicacion" placeholder="Ej: Sala 2, Planta baja" />
+  </div>
+  <div class="campo">
+    <label>Profesor asignado</label>
+    <select [(ngModel)]="curso.profesor">
+      <option value="">— Sin asignar —</option>
+      @for (p of profesores; track p) {
+        <option [value]="p">{{ p }}</option>
+      }
+    </select>
+  </div>
+  <div class="fila">
+    <div class="campo">
+      <label>Horario</label>
+      <input [(ngModel)]="curso.horario" placeholder="Ej: Lun y Mié 10:00–11:00" />
+    </div>
+    <div class="campo campo--pequeño">
+      <label>Plazas máx.</label>
+      <input type="number" [(ngModel)]="curso.plazas" min="1" placeholder="20" />
+    </div>
+  </div>
+  <div class="campo campo-estado">
+    <label>Estado</label>
+    <div class="toggle-wrap">
+      <span [class.dim]="curso.activo">Inactivo</span>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="curso.activo" />
+        <span class="slider"></span>
+      </label>
+      <span [class.dim]="!curso.activo">Activo</span>
+    </div>
+  </div>
+
+</mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">Cancelar</button>
-  <button class="btn-guardar" (click)="confirm()" [disabled]="!nombreCurso.trim()">
+  <button class="btn-guardar" (click)="confirm()" [disabled]="!puedeGuardar">
     Guardar
   </button>
 </mat-dialog-actions>
