@@ -1,4 +1,4 @@
-// ── Variables AVA ────────────────────────────────────────────
+
 $ava-green:      #6CAD6A;
 $ava-green-dark: #4e8a4c;
 $ava-bg:         #e8f5e9;
@@ -6,14 +6,13 @@ $ava-surface:    #ffffff;
 $ava-accent:     #ff7043;
 $bar-bg:         #b2dfdb;
 
-// ── Fondo general ────────────────────────────────────────────
+
 #fondo {
   min-height: 100vh;
   background-color: $ava-bg;
   position: relative;
 }
 
-// ── Header ───────────────────────────────────────────────────
 .header {
   width: 100%;
   img {
@@ -24,7 +23,7 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-// ── FAB speed dial ───────────────────────────────────────────
+
 .fab-wrap {
   position: fixed;
   bottom: 28px;
@@ -68,7 +67,7 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-// ── Action bar ───────────────────────────────────────────────
+
 .action-bar {
   display: flex;
   flex-direction: row;
@@ -119,7 +118,7 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-// ── Toolbar secundaria ───────────────────────────────────────
+
 .toolbar-secundaria {
   display: flex;
   align-items: center;
@@ -188,7 +187,7 @@ $bar-bg:         #b2dfdb;
   font-weight: 700;
 }
 
-// ── Buscador ─────────────────────────────────────────────────
+
 .buscador-wrapper {
   display: flex;
   flex-direction: column;
@@ -258,7 +257,7 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-// ── Tabla ────────────────────────────────────────────────────
+
 .table {
   background: $ava-surface;
   border-radius: 14px;
@@ -300,7 +299,7 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-// ── Avatar profesor ───────────────────────────────────────────
+
 .avatar-profesor {
   width: 28px;
   height: 28px;
@@ -316,7 +315,7 @@ $bar-bg:         #b2dfdb;
   text-transform: uppercase;
 }
 
-// ── Plazas bar ────────────────────────────────────────────────
+
 .plazas-wrap {
   display: flex;
   flex-direction: column;
@@ -347,7 +346,7 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-// ── Estado dot ────────────────────────────────────────────────
+
 .estado-dot {
   width: 20px;
   height: 20px;
@@ -355,7 +354,7 @@ $bar-bg:         #b2dfdb;
   flex-shrink: 0;
 }
 
-// ── Empty state ───────────────────────────────────────────────
+
 .empty-state {
   text-align: center;
   padding: 48px 0;

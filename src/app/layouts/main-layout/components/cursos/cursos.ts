@@ -10,8 +10,6 @@ import { CommonModule } from '@angular/common';
 import { DeleteMember } from '../delete-member/delete-member';
 import { AddCurso } from '../add-curso/add-curso';
 
-// import { AddCursoDialogComponent } from '../dialogs/add-curso-dialog/add-curso-dialog.component';
-
 export interface Curso {
   id: string;
   nombre: string;
@@ -42,7 +40,6 @@ export interface Curso {
   ],
 })
 export class CursosComponent implements OnInit {
-  // ── Estado UI ────────────────────────────────────────────────
   fabAbierto = false;
   filtrosAbiertos = false;
   textoBusqueda = '';
@@ -54,7 +51,6 @@ export class CursosComponent implements OnInit {
     { label: 'Sin plazas', activo: false },
   ];
 
-  // ── Datos (mock — reemplazar con servicio) ───────────────────
   cursos: Curso[] = [
     {
       id: '01',
@@ -130,7 +126,6 @@ export class CursosComponent implements OnInit {
 
   cursosFiltrados: Curso[] = [];
 
-  // ── Selección ────────────────────────────────────────────────
   get selectedCursos() {
     return this.cursos.filter((c) => c.selected);
   }
@@ -159,7 +154,6 @@ export class CursosComponent implements OnInit {
     this.cursosFiltrados = [...this.cursos];
   }
 
-  // ── Búsqueda y filtros ───────────────────────────────────────
   filtrarCursos() {
     const texto = this.textoBusqueda.toLowerCase().trim();
     const filtrosActivos = this.filtros.filter((f) => f.activo).map((f) => f.label);
@@ -210,6 +204,6 @@ export class CursosComponent implements OnInit {
     this.dialog.open(AddCurso, { width: '400px' });
   }
   submit() {
-    this.router.navigate(['/layouts'])
+    this.router.navigate(['/main'])
   }
 }

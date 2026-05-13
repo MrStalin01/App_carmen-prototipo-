@@ -3,11 +3,11 @@
     <img src="header.png" alt="hero" />
   </div>
 
-  <!-- FAB speed dial -->
+
   <div class="fab-wrap">
     <div class="fab-options" [class.open]="fabAbierto">
       <div class="fab-option" (click)="openAddCurso(); fabAbierto = false">
-        <span class="fab-label">Nuevo curso</span>
+        <span class="fab-label">Nueva actividad</span>
         <button mat-mini-fab color="accent">
           <mat-icon>menu_book</mat-icon>
         </button>
@@ -18,7 +18,7 @@
     </button>
   </div>
 
-  <!-- Action bar -->
+
   <div class="action-bar">
     <button class="action-bar-btn" (click)="submit()">
       <i class="bi bi-people"></i>

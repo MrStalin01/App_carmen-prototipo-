@@ -7,14 +7,14 @@
     <div class="fab-options" [class.open]="fabAbierto">
       <div class="fab-option" (click)="openMember(); fabAbierto = false">
         <span class="fab-label">Nuevo socio</span>
-        <button mat-mini-fab color="primary">
+        <button mat-mini-fab >
           <mat-icon>person_add</mat-icon>
         </button>
       </div>
       <div class="fab-option" (click)="openAddCurso(); fabAbierto = false">
-        <span class="fab-label">Nuevo curso</span>
-        <button mat-mini-fab color="accent">
-          <mat-icon>menu_book</mat-icon>
+        <span class="fab-label">Nuevo Actividad</span>
+        <button mat-mini-fab>
+          <mat-icon color="#6CAD6A">menu_book</mat-icon>
         </button>
       </div>
     </div>
@@ -24,6 +24,10 @@
   </div>
 
   <div class="action-bar">
+    <button class="action-bar-btn danger" (click)="submit(); fabAbierto = false">
+      <i class="bi bi-people"></i>
+      <span>Socios</span>
+    </button>
     <button class="action-bar-btn" (click)="onPagos()">
       <i class="bi bi-credit-card me-2"></i>
       <span>Pagos</span>
@@ -32,7 +36,7 @@
       <i class="bi bi-file-earmark-text"></i>
       <span>Prestamos</span>
     </button>
-    <button class="action-bar-btn danger" (click)="cursos(); fabAbierto = false">
+    <button class="action-bar-btn " (click)="cursos(); fabAbierto = false">
       <i class="bi bi-book"></i>
       <span>Cursos</span>
     </button>
@@ -57,7 +61,7 @@
       </button>
       <button class="tbtn tbtn-eliminar" [disabled]="selectedSocios.length === 0" (click)="onEliminar()">
         <i class="bi bi-trash3"></i>
-        Eliminar
+        Dar de baja
         @if (selectedSocios.length > 0) {
           <span class="badge-sel">{{ selectedSocios.length }}</span>
         }
@@ -177,10 +181,9 @@
               <button class="btn btn-link text-dark p-0" [matMenuTriggerFor]="menu">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <mat-menu #menu="matMenu">
+              <mat-menu #menu="matMenu"  >
                 <button mat-menu-item (click)="openAddMember(socio)"><i class="bi bi-pencil-fill me-2"></i> Modificar</button>
                 <button mat-menu-item (click)="onEliminar(socio)"><i class="bi bi-trash3-fill me-2"></i> Eliminar</button>
-                <button mat-menu-item (click)="onCurso(socio)"><i class="bi bi-book me-2"></i> Curso</button>
                 <button mat-menu-item (click)="onCorreo()"><i class="bi bi-envelope me-2"></i> Mandar correo</button>
               </mat-menu>
             </td>

@@ -29,10 +29,14 @@ import { DniValidator } from '../../../../core/validators/dni.validator';
 export class Member {
   private dialogRef = inject(MatDialogRef<Member>);
   private fb = inject(FormBuilder);
-
   form: FormGroup;
 
+  // Número que se mostrará en el header: el siguiente disponible
+  nextNumero: number;
+
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    this.nextNumero = data?.nextNumero ?? 1;
+
     this.form = this.fb.group({
       name:      [data?.nombres   ?? '', [Validators.required]],
       apellidos: [data?.apellidos ?? '', [Validators.required]],
@@ -44,7 +48,7 @@ export class Member {
     });
   }
 
-  esEdicion(): boolean { return !!this.data; }
+  esEdicion(): boolean { return !!this.data?.id; }
 
   guardar() {
     if (this.form.invalid) {

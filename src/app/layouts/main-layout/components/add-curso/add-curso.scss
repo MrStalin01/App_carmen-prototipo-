@@ -1,8 +1,14 @@
 :host {
   display: block;
   padding: 8px;
+  background-color: #f5f0e8;
+  border-radius: 12px;
+  padding: 16px 24px 24px;
+  position: relative;
 }
-
+.mat-dialog-content{
+  background-color: #f5f0e8;
+  }
 h3 {
   font-weight: 700;
   color: #1a3a5c;
@@ -12,23 +18,86 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 12px;
 
   label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: #333;
   }
 
-  input {
+  input, textarea, select {
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 8px 10px;
     font-size: 0.95rem;
     outline: none;
+    font-family: inherit;
+    resize: vertical;
 
     &:focus {
       border-color: #1a6496;
     }
+  }
+
+  &--pequeño input {
+    width: 80px;
+  }
+}
+
+.fila {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.campo-estado {
+  margin-top: 16px;
+}
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+
+  .dim {
+    color: #aaa;
+  }
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+
+  input { display: none; }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+  }
+
+  input:checked + .slider {
+    background: #1a6496;
+    &::before { transform: translateX(18px); }
   }
 }
 

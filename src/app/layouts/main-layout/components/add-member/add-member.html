@@ -1,31 +1,25 @@
 <div class="header-row">
-  <span class="socio-label">socio nº1</span>
+  <span class="socio-label">socio nº{{ socioNumero }}</span>
   <button class="close-btn" (click)="cancel()">✕</button>
 </div>
-
 <div class="title">
   <mat-icon>info</mat-icon>
   <h2>Modificar Socio</h2>
 </div>
-
 <mat-dialog-content [formGroup]="form">
   <div class="fields">
     <mat-form-field appearance="outline">
       <input matInput formControlName="name" placeholder="Nombre" />
     </mat-form-field>
-
     <mat-form-field appearance="outline">
       <input matInput formControlName="apellidos" placeholder="Apellidos" />
     </mat-form-field>
-
     <mat-form-field appearance="outline">
       <input matInput formControlName="email" type="email" placeholder="Email" />
     </mat-form-field>
-
     <mat-form-field appearance="outline">
       <input matInput formControlName="phone" placeholder="Teléfono" />
     </mat-form-field>
-
     <mat-form-field appearance="outline">
       <input matInput formControlName="dni" placeholder="DNI/NIE" />
     </mat-form-field>
@@ -38,7 +32,6 @@
     </div>
   </div>
 </mat-dialog-content>
-
 <mat-dialog-actions align="end">
   <button
     type="button"
@@ -49,9 +42,7 @@
     <span class="dot-estado"></span>
     {{ form.get('activo')?.value ? 'Activo' : 'Inactivo' }}
   </button>
-
   <button class="btn-activate" (click)="guardar()">
     {{ esEdicion() ? 'Actualizar' : 'Guardar' }}
   </button>
-
 </mat-dialog-actions>
