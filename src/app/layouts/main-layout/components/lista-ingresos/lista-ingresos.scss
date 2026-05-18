@@ -1,75 +1,195 @@
-.ingresos-container {
-  padding: 20px;
-  background: #f5f0e8;
+$ava-green:      #6CAD6A;
+$ava-green-dark: #4e8a4c;
+$ava-bg:         #e8f5e9;
+$ava-surface:    #ffffff;
+$ava-accent:     #ff7043;
+$bar-bg:         #b2dfdb;
+.header {
+  width: 100%;
+  img {
+    width: 100%;
+    max-height: 130px;
+    object-fit: contain;
+    display: block;
+  }
+}
+#fondo {
   min-height: 100vh;
+  background-color: $ava-bg;
+  position: relative;
 }
 
-.header {
+.action-bar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 4px;
+  padding: 8px 20px;
+  background-color: $bar-bg;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 
-  h2 {
-    margin: 0;
-    color: #1a3a5c;
+  .action-bar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #2e2e2e;
+    padding: 6px 14px;
+    border-radius: 10px;
+    transition: 0.15s;
+
+    i { font-size: 1.15rem; }
+
+    &:hover { background: rgba(0,0,0,0.07); }
+
+    &.active {
+      background: rgba($ava-green, 0.18);
+      color: $ava-green-dark;
+      font-weight: 700;
+      border-bottom: 2px solid $ava-green-dark;
+    }
   }
 }
 
-.btn-add {
-  background-color: #1a6496;
-  color: white;
-  border: none;
-  border-radius: 8px;
+.toolbar-secundaria {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.tbtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+  font-size: 0.82rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.15s;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.tbtn-add {
+    background: $ava-green;
+    color: #fff;
+    border-color: $ava-green;
+
+    &:hover:not(:disabled) {
+      background: $ava-green-dark;
+      border-color: $ava-green-dark;
+    }
+  }
 }
 
-.btn-delete {
-  background-color: #e53935;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
+.buscador-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
-.tabla-wrapper {
-  overflow-x: auto;
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
+.caja-buscador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $ava-surface;
+  border: 1.5px solid #cde8cd;
+  border-radius: 22px;
+  padding: 6px 14px;
+  min-width: 280px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+
+  i { color: #888; }
+
+  .buscador {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 0.85rem;
+  }
+
+  .btn-expandir {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    padding: 0;
+    font-size: 1rem;
+    &:hover { color: $ava-green-dark; }
+  }
 }
 
-table {
-  width: 100%;
+.table {
+  background: $ava-surface;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  font-size: 0.87rem;
+
+  thead tr {
+    background: $ava-bg;
+
+    th {
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #555;
+      border-bottom: 2px solid #d4ead4;
+      padding: 12px 10px;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    transition: 0.12s;
+
+    &:hover { background: #f1faf1; }
+
+    td {
+      padding: 11px 10px;
+      vertical-align: middle;
+      border-bottom: 1px solid #eef5ee;
+    }
+  }
 }
 
-.buscar-wrapper {
-  margin-bottom: 1.5rem;
-  max-width: 500px;
-}
+.empty-state {
+  text-align: center;
+  padding: 48px 0;
+  color: #aaa;
 
-.buscar-input {
-  width: 100%;
-}
+  i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 10px;
+  }
 
-::ng-deep .buscar-input .mat-form-field-outline {
-  border-radius: 30px !important;
-}
-
-::ng-deep .buscar-input.mat-focused .mat-form-field-outline-thick {
-  color: #1a6496 !important;
-}
-
-.mat-icon.mat-prefix {
-  margin-right: 10px;
-  color: #6c757d;
-  transform: translateY(2px);
-}
-
-.buscar-input button.mat-icon-button {
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
 }

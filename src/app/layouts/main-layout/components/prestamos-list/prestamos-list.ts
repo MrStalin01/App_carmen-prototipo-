@@ -13,6 +13,8 @@ import { PrestamoService, objeto } from '../../services/prestamo.service';
 import { AddPrestamo } from '../add-prestamo/add-prestamo';
 import { PrestarDevolverComponent } from '../prestar-devolver/prestar-devolver';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-prestamos-list',
@@ -24,7 +26,6 @@ import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service'
     MatIconModule,
     MatTabsModule,
     MatTooltipModule,
-    MatDialogClose,
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -36,6 +37,7 @@ export class PrestamosListComponent implements OnInit {
   private prestamoService = inject(PrestamoService);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+  private router =inject(Router);
 
   todas = signal<objeto[]>([]);
   prestadas = signal<objeto[]>([]);
@@ -95,6 +97,7 @@ export class PrestamosListComponent implements OnInit {
       }
     });
   }
+  fabAbierto = false;
 
   eliminar(id: number, nombre: string): void {
     this.confirmDialog
@@ -110,5 +113,23 @@ export class PrestamosListComponent implements OnInit {
           this.cargarDatos();
         }
       });
+  }
+  goToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+  onIngresos() {
+    this.router.navigate(['/ingresos']);
+  }
+  onPrestamos() {
+    this.router.navigate(['/prestamos']);
+  }
+  submit(): void {
+    this.router.navigate(['/main']);
+  }
+  onGastos() {
+    this.router.navigate(['/gastos']);
+  }
+  cursos(): void {
+    this.router.navigate(['/cursos']);
   }
 }

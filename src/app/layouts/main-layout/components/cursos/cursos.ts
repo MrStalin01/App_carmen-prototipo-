@@ -154,4 +154,14 @@ export class CursosComponent implements OnInit {
   submit(): void {
     this.router.navigate(['/main']);
   }
+  onPrestamos() {
+    this.router.navigate(['/prestamos']);
+  }
+  onGastos() {
+    this.router.navigate(['/gastos']);
+  }
+  onIngresos() {
+    this.router.navigate(['/ingresos']);
+  }
+
 }

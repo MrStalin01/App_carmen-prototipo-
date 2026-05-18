@@ -94,7 +94,7 @@ $bar-bg:         #b2dfdb;
     color: #2e2e2e;
     padding: 6px 14px;
     border-radius: 10px;
-    transition: background 0.15s;
+    transition:  0.15s;
 
     i {
       font-size: 1.15rem;
@@ -150,7 +150,7 @@ $bar-bg:         #b2dfdb;
     cursor: not-allowed;
   }
 
-  // Botón añadir (verde)
+
   &.tbtn-add {
     background: $ava-green;
     color: #fff;
@@ -162,7 +162,7 @@ $bar-bg:         #b2dfdb;
     }
   }
 
-  // Botón eliminar
+
   &.tbtn-eliminar {
     background: #fff;
     color: #c0392b;
@@ -248,7 +248,7 @@ $bar-bg:         #b2dfdb;
     border-radius: 16px;
     padding: 4px 12px;
     background: #e0e0e0;
-    transition: background 0.15s;
+    transition:  0.15s;
 
     &.chip-activo {
       background: $ava-green;
@@ -281,7 +281,7 @@ $bar-bg:         #b2dfdb;
   }
 
   tbody tr {
-    transition: background 0.12s;
+    transition:  0.12s;
 
     &:hover {
       background: #f1faf1;

@@ -11,6 +11,8 @@ import { GastoIngresoService, Gasto } from '../../services/gasto-ingreso.service
 import { AddGastoComponent } from '../add-gasto/add-gasto';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-lista-gastos',
@@ -24,6 +26,7 @@ import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service'
     MatIconModule,
     MatTableModule,
     MatTooltipModule,
+    RouterModule,
   ],
   templateUrl: './lista-gastos.html',
   styleUrl: './lista-gastos.scss',
@@ -32,6 +35,7 @@ export class ListaGastosComponent implements OnInit {
   private gastoService = inject(GastoIngresoService);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+  private router =inject(Router);
 
   gastos = signal<Gasto[]>([]);
   searchTerm = signal('');
@@ -47,6 +51,7 @@ export class ListaGastosComponent implements OnInit {
       );
     }),
   );
+  fabAbierto = false;
 
   ngOnInit(): void {
     this.cargarGastos();
@@ -86,5 +91,23 @@ export class ListaGastosComponent implements OnInit {
 
   clearSearch(): void {
     this.searchTerm.set('');
+  }
+  submit(): void {
+    this.router.navigate(['/main']);
+  }
+  onPrestamos() {
+    this.router.navigate(['/prestamos']);
+  }
+  onGastos() {
+    this.router.navigate(['/gastos']);
+  }
+  onIngresos() {
+    this.router.navigate(['/ingresos']);
+  }
+  cursos(): void {
+    this.router.navigate(['/cursos']);
+  }
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 }

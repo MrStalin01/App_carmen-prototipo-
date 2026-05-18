@@ -10,7 +10,8 @@ import { GastoIngresoService, Ingreso } from '../../services/gasto-ingreso.servi
 import { AddIngresoComponent } from '../add-ingreso/add-ingreso';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
-
+import { Router } from '@angular/router';
+import { MatMenuModule } from '@angular/material/menu';
 @Component({
   selector: 'app-lista-ingresos',
   standalone: true,
@@ -22,6 +23,7 @@ import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service'
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatMenuModule,
   ],
   templateUrl: './lista-ingresos.html',
   styleUrl: './lista-ingresos.scss',
@@ -30,6 +32,7 @@ export class ListaIngresosComponent implements OnInit {
   private ingresoService = inject(GastoIngresoService);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+  private router =inject(Router);
 
   ingresos = signal<Ingreso[]>([]);
   searchTerm = signal('');
@@ -80,4 +83,24 @@ export class ListaIngresosComponent implements OnInit {
         }
       });
   }
+  fabAbierto = false;
+  submit(): void {
+    this.router.navigate(['/main']);
+  }
+  onPrestamos() {
+    this.router.navigate(['/prestamos']);
+  }
+  onGastos() {
+    this.router.navigate(['/gastos']);
+  }
+  onIngresos() {
+    this.router.navigate(['/ingresos']);
+  }
+  cursos(): void {
+    this.router.navigate(['/cursos']);
+  }
+  goToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+
 }

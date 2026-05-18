@@ -1,65 +1,93 @@
-<div class="ingresos-container">
-  <!-- Cabecera con título y botón -->
+<section id="fondo">
   <div class="header">
-    <h2>📈 Ingresos</h2>
-    <button
-      class="btn-add"
-      (click)="abrirAddIngreso()"
-      matTooltip="Añadir ingreso"
-      matTooltipPosition="above"
-    >
-      ➕ Añadir ingreso
+    <img src="header.png" alt="hero" />
+  </div>
+  <div class="action-bar">
+    <button class="action-bar-btn" (click)="submit()">
+      <i class="bi bi-people"></i>
+      <span>Socios</span>
+    </button>
+    <button class="action-bar-btn" (click)="onGastos()">
+      <i class="bi bi-credit-card"></i>
+      <span>Pagos</span>
+    </button>
+    <button class="action-bar-btn" (click)="onPrestamos()">
+      <i class="bi bi-file-earmark-text"></i>
+      <span>Prestamos</span>
+    </button>
+    <button class="action-bar-btn" (click)="cursos()">
+      <i class="bi bi-book"></i>
+      <span>Cursos</span>
+    </button>
+    <button class="action-bar-btn active">
+      <i class="bi bi-file-earmark-spreadsheet"></i>
+      <span>Presupuestos</span>
+    </button>
+    <button class="action-bar-btn" (click)="goToRegister()">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Cerrar sesión</span>
     </button>
   </div>
-  <div class="buscar-wrapper">
-    <mat-form-field appearance="outline" class="buscar-input">
-      <mat-icon matPrefix>search</mat-icon>
-      <mat-label>Buscar por fecha o descripción</mat-label>
-      <input
-        matInput
-        [value]="searchTerm()"
-        (input)="searchTerm.set($any($event.target).value)"
-        placeholder="Ej: 2026-05-12 o Venta de productos"
-      />
-      <button mat-icon-button matSuffix *ngIf="searchTerm()" (click)="clearSearch()">
-        <mat-icon>close</mat-icon>
+
+  <div class="toolbar-secundaria">
+    <div class="toolbar-acciones">
+      <button class="tbtn tbtn-add" (click)="abrirAddIngreso()">
+        <i class="bi bi-plus-lg"></i>
+        Añadir ingreso
       </button>
-    </mat-form-field>
+    </div>
+
+    <div class="buscador-wrapper">
+      <div class="caja-buscador">
+        <i class="bi bi-search"></i>
+        <input
+          class="buscador"
+          type="text"
+          placeholder="Buscar por fecha o descripción..."
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)" />
+        <button class="btn-expandir" *ngIf="searchTerm()" (click)="clearSearch()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
-  <div class="tabla-wrapper">
-    <table mat-table [dataSource]="ingresosFiltrados()">
-      <ng-container matColumnDef="fecha">
-        <th mat-header-cell *matHeaderCellDef>Fecha</th>
-        <td mat-cell *matCellDef="let item">{{ item.fechaIngreso }}</td>
-      </ng-container>
+  <div class="container mt-3">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of ingresosFiltrados()">
+          <td>{{ item.fechaIngreso }}</td>
+          <td class="fw-semibold">{{ item.descripcion }}</td>
+          <td>{{ item.monto | currency: 'EUR' }}</td>
+          <td class="text-end">
+            <button class="btn btn-link text-dark p-0" [matMenuTriggerFor]="menu">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="eliminarIngreso(item.id, item.descripcion, item.monto)">
+                <i class="bi bi-trash3-fill me-2"></i> Eliminar
+              </button>
+            </mat-menu>
+          </td>
+        </tr>
 
-      <ng-container matColumnDef="descripcion">
-        <th mat-header-cell *matHeaderCellDef>Descripción</th>
-        <td mat-cell *matCellDef="let item">{{ item.descripcion }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="monto">
-        <th mat-header-cell *matHeaderCellDef>Monto</th>
-        <td mat-cell *matCellDef="let item">{{ item.monto | currency: 'EUR' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let item">
-          <button
-            class="btn-delete"
-            (click)="eliminarIngreso(item.id, item.descripcion, item.monto)"
-            matTooltip="Eliminar ingreso"
-            matTooltipPosition="above"
-          >
-            Eliminar 🗑️
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr *ngIf="ingresosFiltrados().length === 0">
+          <td colspan="4" class="empty-state">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            <p>No se encontraron ingresos</p>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
-</div>
+
+</section>
