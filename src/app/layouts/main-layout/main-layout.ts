@@ -1,18 +1,19 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { FormsModule } from '@angular/forms';
-import { AddMember } from './components/add-member/add-member';
+import { ModifyMember } from './components/modify-member/modify-member';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Member } from './components/member/member';
+import { AddMember } from './components/add-member/add-member';
 import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
 import { RouterModule } from '@angular/router';
+import { SociosService } from '../../core/services/socios/socios.service';
 
 interface Socio {
   id: string;
@@ -45,9 +46,10 @@ interface Socio {
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })
-export class MainLayout {
-  private dialog = inject(MatDialog);
-  private router = inject(Router);
+export class MainLayout implements OnInit {
+  private dialog    = inject(MatDialog);
+  private router    = inject(Router);
+  private sociosSvc = inject(SociosService);
 
   filtrosAbiertos = false;
   sortColumn: 'nombres' | 'apellidos' | null = null;
@@ -55,161 +57,94 @@ export class MainLayout {
   estadoFiltro: 'todos' | 'Activo' | 'Inactivo' = 'todos';
   profesorFiltro: 'todos' | 'Si' | 'No' = 'todos';
   textoBusqueda = '';
+  cargando = false;
+  errorCarga: string | null = null;
 
   filtros = [
-    { label: 'Activo', activo: false },
-    { label: 'Inactivo', activo: false },
-    { label: 'Profesor', activo: false },
-    { label: 'A → Z', activo: false },
-    { label: 'Z → A', activo: false },
-    { label: '0 → 9', activo: false },
-    { label: '9 → 0', activo: false },
+    { label: 'Activo',    activo: false },
+    { label: 'Inactivo',  activo: false },
+    { label: 'Profesor',  activo: false },
+    { label: 'A → Z',    activo: false },
+    { label: 'Z → A',    activo: false },
+    { label: '0 → 9',    activo: false },
+    { label: '9 → 0',    activo: false },
   ];
 
-  // ── Array de cursos disponibles en la asociación ──────────────
-  // Cuando conectes con la API, rellena esto desde cursoService.getCursos()
   cursosDisponibles: string[] = ['Yoga', 'Pilates', 'Zumba', 'Spinning'];
 
-  socios: Socio[] = [
-    {
-      id: '00',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '01',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '02',
-      nombres: 'María José',
-      apellidos: 'Rodríguez Blanco',
-      correo: 'mariajose.rodriguez@gmail.com',
-      tel: '+34 611 44 55 66',
-      dni: '30456789B',
-      estado: 'Activo',
-      fechaVenc: '12/03/2026',
-      profesor: 'No',
-      cursos: ['Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '03',
-      nombres: 'Alejandro',
-      apellidos: 'Torres Vega',
-      correo: 'alejandro.torres@gmail.com',
-      tel: '+34 633 77 88 99',
-      dni: '45678901C',
-      estado: 'Inactivo',
-      fechaVenc: '01/06/2025',
-      profesor: 'No',
-      cursos: [],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '04',
-      nombres: 'Laura',
-      apellidos: 'Sánchez Mora',
-      correo: 'laura.sanchez@gmail.com',
-      tel: '+34 699 12 34 56',
-      dni: '67890123D',
-      estado: 'Activo',
-      fechaVenc: '20/09/2026',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Zumba', 'Spinning'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '05',
-      nombres: 'Carlos Antonio',
-      apellidos: 'Jiménez Ruiz',
-      correo: 'carlos.jimenez@gmail.com',
-      tel: '+34 655 98 76 54',
-      dni: '89012345E',
-      estado: 'Activo',
-      fechaVenc: '30/11/2026',
-      profesor: 'No',
-      cursos: ['Spinning'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '06',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '07',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '08',
-      nombres: 'María José',
-      apellidos: 'Rodríguez Blanco',
-      correo: 'mariajose.rodriguez@gmail.com',
-      tel: '+34 611 44 55 66',
-      dni: '30456789B',
-      estado: 'Activo',
-      fechaVenc: '12/03/2026',
-      profesor: 'No',
-      cursos: ['Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-  ];
+  socios: Socio[] = [];
 
+  // ── Ciclo de vida ───────────────────────────────────────────────
+  ngOnInit(): void {
+    this.cargarSocios();
+  }
+
+  /**
+   * GET /socio/all
+   * Mapea la estructura anidada del servidor al formato local.
+   */
+  cargarSocios(): void {
+    this.cargando = true;
+    this.errorCarga = null;
+
+    this.sociosSvc.getSocios().subscribe({
+      next: (data) => {
+        this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error GET /socio/all:', err);
+        this.errorCarga = 'No se pudo cargar la lista de socios.';
+        this.cargando = false;
+      },
+    });
+  }
+
+  /**
+   * Convierte un socio del servidor al formato local.
+   * Todos los campos que el servidor no devuelva quedan como string vacío.
+   */
+  private mapearSocio(s: any): Socio {
+    const info = s.informacionPersonalModel ?? {};
+
+    // Extraer nombres de cursos de las actividades anidadas
+    const cursos: string[] = [];
+    if (s.actividades && typeof s.actividades === 'object') {
+      for (const actividad of Object.values(s.actividades) as any[]) {
+        if (Array.isArray(actividad?.cursos)) {
+          for (const curso of actividad.cursos) {
+            if (curso?.id) cursos.push(curso.id);
+          }
+        }
+      }
+    }
+
+    return {
+      id:            s.id               ?? s._id       ?? '',
+      nombres:       info.nombres        ?? '',
+      apellidos:     info.apellidos      ?? '',
+      correo:        info.correo         ?? '',
+      tel:           info.telefono       ?? '',
+      dni:           info.identificacion ?? '',
+      estado:        s.estado_Socio      ?? 'Inactivo',
+      fechaVenc:     s.fecha_vencimiento ?? '',
+      profesor:      s.tipo_socio === 'Profesor' ? 'Si' : 'No',
+      cursos,
+      cursosAbiertos: false,
+      selected:       false,
+    };
+  }
+
+  // ── Filtros y ordenación (sin cambios) ─────────────────────────
   get sociosFiltrados(): Socio[] {
     let lista = this.socios;
 
     if (this.estadoFiltro !== 'todos') {
       lista = lista.filter((s) => s.estado === this.estadoFiltro);
     }
-
     if (this.profesorFiltro !== 'todos') {
       lista = lista.filter((s) => s.profesor === this.profesorFiltro);
     }
-
     if (this.textoBusqueda.trim()) {
       const texto = this.textoBusqueda.toLowerCase().trim();
       lista = lista.filter(
@@ -220,7 +155,6 @@ export class MainLayout {
           s.dni.toLowerCase().includes(texto),
       );
     }
-
     return lista;
   }
 
@@ -242,27 +176,18 @@ export class MainLayout {
   }
 
   fabAbierto = false;
-
   onCheckChange(): void {}
 
   filtrarEstado() {
-    if (this.estadoFiltro === 'todos') {
-      this.estadoFiltro = 'Activo';
-    } else if (this.estadoFiltro === 'Activo') {
-      this.estadoFiltro = 'Inactivo';
-    } else {
-      this.estadoFiltro = 'todos';
-    }
+    this.estadoFiltro =
+      this.estadoFiltro === 'todos'   ? 'Activo'  :
+        this.estadoFiltro === 'Activo'  ? 'Inactivo': 'todos';
   }
 
   filtrarProfesor() {
-    if (this.profesorFiltro === 'todos') {
-      this.profesorFiltro = 'Si';
-    } else if (this.profesorFiltro === 'Si') {
-      this.profesorFiltro = 'No';
-    } else {
-      this.profesorFiltro = 'todos';
-    }
+    this.profesorFiltro =
+      this.profesorFiltro === 'todos' ? 'Si'  :
+        this.profesorFiltro === 'Si'    ? 'No'  : 'todos';
   }
 
   sortBy(col: 'nombres' | 'apellidos') {
@@ -279,16 +204,13 @@ export class MainLayout {
     });
   }
 
-  toggleFiltros() {
-    this.filtrosAbiertos = !this.filtrosAbiertos;
-  }
+  toggleFiltros() { this.filtrosAbiertos = !this.filtrosAbiertos; }
+  toggleChip(filtro: any) { filtro.activo = !filtro.activo; }
 
-  toggleChip(filtro: any) {
-    filtro.activo = !filtro.activo;
-  }
+  // ── Diálogos ────────────────────────────────────────────────────
 
   openAddMember(socio?: Socio) {
-    const dialogRef = this.dialog.open(AddMember, {
+    const dialogRef = this.dialog.open(ModifyMember, {
       width: '480px',
       data: socio ?? null,
     });
@@ -305,60 +227,80 @@ export class MainLayout {
 
   openMember() {
     const nextNumero = this.socios.length + 1;
-    this.dialog.open(Member, {
+    const dialogRef = this.dialog.open(AddMember, {
       data: { nextNumero },
+    });
+
+    // Cuando AddMember cierra con éxito ya llamó a la API internamente;
+    // solo necesitamos refrescar la lista local con lo que devuelve.
+    dialogRef.afterClosed().subscribe((nuevoSocio) => {
+      if (!nuevoSocio) return;
+      this.socios.push(nuevoSocio);
     });
   }
 
-  goToRegister() {
-    this.router.navigate(['/register']);
-  }
+  goToRegister() { this.router.navigate(['/register']); }
+  cursos()       { this.router.navigate(['/cursos']); }
 
-  // ── Navega a la vista de cursos ───────────────────────────────
-  cursos() {
-    this.router.navigate(['/cursos']);
-  }
-
+  /**
+   * DELETE /socio/delete
+   * Si se pasa un socio concreto lo elimina por su id.
+   * Si no, elimina todos los seleccionados en secuencia.
+   */
   onEliminar(socio?: Socio) {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
+
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (!confirmed) return;
+
       if (socio) {
-        this.socios = this.socios.filter((s) => s !== socio);
+        // ── Eliminar un socio concreto ──────────────────────────
+        this.sociosSvc.deleteSocio(socio.id, socio.nombres).subscribe({
+          next: () => {
+            this.socios = this.socios.filter((s) => s !== socio);
+          },
+          error: (err) => {
+            console.error('Error DELETE /socio/delete:', err);
+          },
+        });
       } else {
-        this.socios = this.socios.filter((s) => !s.selected);
+        // ── Eliminar todos los seleccionados ────────────────────
+        const seleccionados = this.socios.filter((s) => s.selected);
+        let completados = 0;
+
+        seleccionados.forEach((s) => {
+          this.sociosSvc.deleteSocio(s.id, s.nombres).subscribe({
+            next: () => {
+              completados++;
+              if (completados === seleccionados.length) {
+                // Refrescamos la lista solo cuando todas las peticiones terminen
+                this.socios = this.socios.filter((x) => !x.selected);
+              }
+            },
+            error: (err) => {
+              console.error(`Error al eliminar socio ${s.id}:`, err);
+            },
+          });
+        });
       }
     });
   }
 
-  onModificar() {
-    console.log('Modificar');
-  }
+  onModificar() { console.log('Modificar'); }
 
   openAddCurso() {
-    // ── Usa cursosDisponibles, no cursos() ────────────────────
     const dialogRef = this.dialog.open(AddCurso, {
       data: { cursosExistentes: this.cursosDisponibles },
     });
-
     dialogRef.afterClosed().subscribe((nuevoCurso) => {
       if (!nuevoCurso) return;
-      // Si el nombre es nuevo, lo añadimos al array para futuras aperturas
       if (!this.cursosDisponibles.includes(nuevoCurso.nombre)) {
         this.cursosDisponibles.push(nuevoCurso.nombre);
       }
     });
   }
 
-  onPagos() {
-    console.log('Pagos');
-  }
-
-  onCorreo() {
-    console.log('Correo', this.selectedSocios);
-  }
-
-  submit() {
-    this.router.navigate(['/main']);
-  }
+  onPagos()  { console.log('Pagos'); }
+  onCorreo() { console.log('Correo', this.selectedSocios); }
+  submit()   { this.router.navigate(['/main']); }
 }

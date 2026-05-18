@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-delete-member',
+  selector: 'app-delete-add-member',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, FormsModule],
   templateUrl: './delete-member.html',
