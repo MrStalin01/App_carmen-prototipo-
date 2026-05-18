@@ -75,8 +75,12 @@ export class PrestarDevolverComponent implements OnInit {
     this.validarAnotacionesPrestamo();
 
     if (this.errorEntidadAjena || this.errorAnotacionesPrestamo) return;
-    if (!this.herramientaSeleccionadaId || !this.entidadAjena.trim()) return;
-    this.prestamoService.prestarObjeto(this.herramientaSeleccionadaId);
+    if (!this.herramientaSeleccionadaId) return;
+    this.prestamoService.prestarObjeto(
+      this.herramientaSeleccionadaId,
+      this.entidadAjena.trim(),
+      this.anotacionesPrestamo.trim(),
+    );
     this.limpiarPrestamo();
     this.cargarDatos();
     this.dialogRef.close(true); // cierra el diálogo tras prestar
@@ -86,7 +90,10 @@ export class PrestarDevolverComponent implements OnInit {
     this.validarAnotacionesDevolucion();
     if (!this.herramientaDevueltaId || this.errorAnotacionesDevolucion) return;
     if (!this.herramientaDevueltaId) return;
-    this.prestamoService.devolverObjeto(this.herramientaDevueltaId);
+    this.prestamoService.devolverObjeto(
+      this.herramientaDevueltaId,
+      this.anotacionesDevolucion.trim(),
+    );
     this.limpiarDevolucion();
     this.cargarDatos();
     this.dialogRef.close(true); // cierra el diálogo tras devolver

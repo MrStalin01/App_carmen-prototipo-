@@ -1,45 +1,91 @@
 :host {
   display: block;
-  background-color: #f5f0e8;
-  border-radius: 12px;
-  padding: 16px 24px 24px;
+  background-color: #f0f4f0;
+  border-radius: 16px;
+  padding: 20px 24px 24px;
 }
 
-h3 {
-  font-weight: 700;
+h3,
+[mat-dialog-title] {
+  font-weight: 600;
   color: #1a3a5c;
   margin: 0 0 16px 0;
   font-size: 1.2rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .campo {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 8px;
+  margin-bottom: 16px;
 
   label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
     color: #333;
-    font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   input,
   textarea {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 0.95rem;
-    outline: none;
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
     font-family: inherit;
+    transition: border-color 0.15s;
 
     &:focus {
-      border-color: #1a6496;
+      outline: none;
+      border-color: #66bb6a;
     }
   }
 
   textarea {
     resize: vertical;
+  }
+}
+
+.error {
+  color: #c62828;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.btn-guardar {
+  background-color: #2e7d32; // verde como el botón "Añadir herramienta" del listado
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:disabled {
+    background-color: #a0bcd4;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: #1b5e20;
+  }
+}
+
+mat-dialog-actions button[mat-button] {
+  color: #666;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+
+  &:hover {
+    background: #e0e0e0;
   }
 }
 
@@ -49,25 +95,4 @@ mat-dialog-actions {
   gap: 12px;
   padding-top: 16px;
   margin-top: 8px;
-}
-
-.btn-guardar {
-  background-color: #1a6496;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-weight: 600;
-  cursor: pointer;
-
-  &:disabled {
-    background-color: #a0bcd4;
-    cursor: not-allowed;
-  }
-}
-
-.error {
-  color: #e53935;
-  font-size: 0.7rem;
-  margin-top: 4px;
 }

@@ -1,5 +1,13 @@
 import { Injectable, signal } from '@angular/core';
 
+export interface PrestamoRegistro {
+  id: number;
+  fechaInicio: Date;
+  fechaFin: Date | null;
+  prestadoA: string;
+  anotaciones: string;
+}
+
 export interface objeto {
   id: number;
   nombre: string;
@@ -7,11 +15,13 @@ export interface objeto {
   descripcion: string;
   sitioGuardado: string;
   prestadoActual: boolean;
+  prestamos: PrestamoRegistro[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class PrestamoService {
   private nextId = 1;
+  private nextPrestamoId = 1;
 
   objetos = signal<objeto[]>([
     {
@@ -21,6 +31,7 @@ export class PrestamoService {
       descripcion: 'Martillo de carpintero',
       sitioGuardado: 'Cajón rojo',
       prestadoActual: false,
+      prestamos: [],
     },
     {
       id: this.nextId++,
@@ -29,6 +40,15 @@ export class PrestamoService {
       descripcion: 'Taladro percutor',
       sitioGuardado: 'Estante azul',
       prestadoActual: true,
+      prestamos: [
+        {
+          id: this.nextPrestamoId++,
+          fechaInicio: new Date(2026, 4, 10),
+          fechaFin: null,
+          prestadoA: 'Juan Pérez',
+          anotaciones: 'Préstamo de ejemplo',
+        },
+      ],
     },
     {
       id: this.nextId++,
@@ -37,6 +57,7 @@ export class PrestamoService {
       descripcion: 'Destornillador de estrella',
       sitioGuardado: 'Cajón pequeño',
       prestadoActual: false,
+      prestamos: [],
     },
   ]);
 
@@ -62,19 +83,50 @@ export class PrestamoService {
         descripcion,
         sitioGuardado,
         prestadoActual: false,
+        prestamos: [],
       },
     ]);
   }
 
-  prestarObjeto(id: number) {
+  prestarObjeto(id: number, prestadoA: string, anotaciones: string) {
     this.objetos.update((lista) =>
-      lista.map((objeto) => (objeto.id === id ? { ...objeto, prestadoActual: true } : objeto)),
+      lista.map((objeto) => {
+        if (objeto.id === id && !objeto.prestadoActual) {
+          const nuevoPrestamo = {
+            id: this.nextPrestamoId++,
+            fechaInicio: new Date(),
+            fechaFin: null,
+            prestadoA,
+            anotaciones,
+          };
+          return {
+            ...objeto,
+            prestadoActual: true,
+            prestamos: [...objeto.prestamos, nuevoPrestamo],
+          };
+        }
+        return objeto;
+      }),
     );
   }
-
-  devolverObjeto(id: number) {
+  devolverObjeto(id: number, anotacionesDevolucion: string) {
     this.objetos.update((lista) =>
-      lista.map((objeto) => (objeto.id === id ? { ...objeto, prestadoActual: false } : objeto)),
+      lista.map((objeto) => {
+        if (objeto.id === id && objeto.prestadoActual) {
+          const prestamosActualizados = [...objeto.prestamos];
+          const ultimoPrestamo = prestamosActualizados[prestamosActualizados.length - 1];
+          if (ultimoPrestamo) {
+            ultimoPrestamo.fechaFin = new Date();
+            // Puedes guardar las anotaciones de devolución donde quieras
+          }
+          return {
+            ...objeto,
+            prestadoActual: false,
+            prestamos: prestamosActualizados,
+          };
+        }
+        return objeto;
+      }),
     );
   }
 

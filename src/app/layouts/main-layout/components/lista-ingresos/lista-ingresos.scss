@@ -1,6 +1,6 @@
 .ingresos-container {
   padding: 20px;
-  background: #f5f0e8;
+  background-color: #f0f4f0;
   min-height: 100vh;
 }
 
@@ -13,40 +13,87 @@
   h2 {
     margin: 0;
     color: #1a3a5c;
+    font-size: 1.4rem;
+    font-weight: 600;
   }
 }
 
 .btn-add {
-  background-color: #1a6496;
+  background-color: #2e7d32;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 8px 18px;
+  font-weight: 500;
+  font-size: 0.8rem;
   cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background-color: #1b5e20;
+  }
 }
 
 .btn-delete {
-  background-color: #e53935;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
+  background: #fce4ec;
+  border: 1px solid #ef9a9a;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #c62828;
   cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #ffcdd2;
+    border-color: #e57373;
+  }
 }
 
 .tabla-wrapper {
-  overflow-x: auto;
-  background: white;
+  background: #fff;
   border-radius: 12px;
-  padding: 16px;
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
+  padding: 0;
 }
 
 table {
   width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+
+  th {
+    background: #f8faf8;
+    font-size: 12px;
+    font-weight: 600;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 10px 12px;
+    border-bottom: 1.5px solid #e8e8e8;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: #f9fdf9;
+  }
 }
 
 .buscar-wrapper {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
   max-width: 500px;
 }
 

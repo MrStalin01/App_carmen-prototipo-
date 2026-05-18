@@ -24,7 +24,6 @@ import { formatDate } from '@angular/common';
     MatDatepickerModule,
     MatNativeDateModule,
   ],
-
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
     { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -37,64 +36,84 @@ export class AddGastoComponent {
   private dialogRef = inject(MatDialogRef<AddGastoComponent>);
   private gastoService = inject(GastoIngresoService);
 
-  monto: number | null = null;
-  descripcion = '';
-  fecha = '';
+  monto: string = '';
+  descripcion: string = '';
+  fecha: string = '';
   fechaDate: Date | null = null;
 
-  errorMonto = '';
-  errorDescripcion = '';
-  errorFecha = '';
+  errorMonto: string = '';
+  errorDescripcion: string = '';
+  errorFecha: string = '';
 
-  validarMonto(): boolean {
-    if (this.monto === null || this.monto === undefined) {
-      this.errorMonto = '';
-      return false;
+  validarMonto(): void {
+    const valor = this.monto.trim();
+    if (valor === '') {
+      this.errorMonto = 'El monto es obligatorio';
+      return;
     }
-    if (this.monto <= 0) {
+    const valorNormalizado = valor.replace(',', '.');
+    const regex = /^\d+(\.\d+)?$/;
+    if (!regex.test(valorNormalizado)) {
+      this.errorMonto = 'El monto debe ser un número positivo (puede usar decimales)';
+      return;
+    }
+    const num = parseFloat(valorNormalizado);
+    if (isNaN(num) || num <= 0) {
       this.errorMonto = 'El monto debe ser mayor que 0';
-      return false;
+      return;
     }
     this.errorMonto = '';
-    return true;
   }
 
-  validarDescripcion(): boolean {
-    if (!this.descripcion.trim()) {
+  validarDescripcion(): void {
+    const desc = this.descripcion.trim();
+    if (desc === '') {
       this.errorDescripcion = 'La descripción es obligatoria';
-      return false;
-    } else if (this.descripcion.trim().length < 5) {
+    } else if (desc.length < 5) {
       this.errorDescripcion = 'La descripción debe tener al menos 5 caracteres';
-      return false;
+    } else {
+      this.errorDescripcion = '';
     }
-    this.errorDescripcion = '';
-    return true;
   }
 
-  validarFecha(): boolean {
+  validarFecha(): void {
     if (!this.fechaDate) {
       this.errorFecha = 'La fecha es obligatoria';
-      return false;
+    } else {
+      this.errorFecha = '';
     }
-    this.errorFecha = '';
-    return true;
   }
 
   onFechaChange(event: any): void {
     if (event.value) {
+      this.fechaDate = event.value;
       this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
+      this.errorFecha = '';
+    } else {
+      this.fechaDate = null;
+      this.fecha = '';
+      this.errorFecha = 'La fecha es obligatoria';
     }
+    this.validarFecha();
   }
 
   isFormValid(): boolean {
-    return this.validarMonto() && this.validarDescripcion() && this.validarFecha();
+    return (
+      this.monto.trim() !== '' &&
+      this.errorMonto === '' &&
+      this.descripcion.trim() !== '' &&
+      this.errorDescripcion === '' &&
+      this.fechaDate !== null &&
+      this.errorFecha === ''
+    );
   }
 
   confirm(): void {
     if (!this.isFormValid()) return;
 
+    const montoNumerico = parseFloat(this.monto.replace(',', '.'));
     this.gastoService.addGasto({
-      monto: this.monto!,
+      monto: montoNumerico,
       descripcion: this.descripcion.trim(),
       fechaGasto: this.fecha,
     });

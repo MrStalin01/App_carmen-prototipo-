@@ -20,15 +20,17 @@
   </div>
 
   <mat-tab-group>
+    <!-- ================= TODAS ================= -->
     <mat-tab label="Todas">
       <div class="tabla-wrapper">
-        <table>
+        <table class="table">
           <thead>
             <tr>
               <th>Herramienta</th>
               <th>Descripción</th>
               <th>Ubicación</th>
               <th>Estado</th>
+              <th>Último Préstamo</th>
               <th></th>
             </tr>
           </thead>
@@ -46,39 +48,15 @@
                 </span>
               </td>
               <td>
-                <button
-                  class="btn-eliminar"
-                  (click)="eliminar(item.id, item.nombre)"
-                  matTooltip="Eliminar préstamo"
-                  matTooltipPosition="above"
+                <ng-container
+                  *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosTodas"
                 >
-                  Eliminar 🗑️
-                </button>
+                  {{ item.prestamos[item.prestamos.length - 1].fechaInicio | date: 'dd/MM/yyyy' }}
+                </ng-container>
+                <ng-template #sinPrestamosTodas>
+                  <span class="text-muted">Nunca</span>
+                </ng-template>
               </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Prestadas">
-      <div class="tabla-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Herramienta</th>
-              <th>Descripción</th>
-              <th>Ubicación</th>
-              <th>Estado</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of prestadasFiltradas()">
-              <td>{{ item.nombre }}</td>
-              <td>{{ item.descripcion }}</td>
-              <td>{{ item.sitioGuardado }}</td>
-              <td><span class="prestado">Prestado</span></td>
               <td>
                 <button
                   class="btn-eliminar"
@@ -95,15 +73,63 @@
       </div>
     </mat-tab>
 
-    <mat-tab label="Disponibles">
+    <!-- ================= PRESTADAS ================= -->
+    <mat-tab label="Prestadas">
       <div class="tabla-wrapper">
-        <table>
+        <table class="table">
           <thead>
             <tr>
               <th>Herramienta</th>
               <th>Descripción</th>
               <th>Ubicación</th>
               <th>Estado</th>
+              <th>Último Préstamo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of prestadasFiltradas()">
+              <td>{{ item.nombre }}</td>
+              <td>{{ item.descripcion }}</td>
+              <td>{{ item.sitioGuardado }}</td>
+              <td><span class="prestado">Prestado</span></td>
+              <td>
+                <ng-container
+                  *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosPrestadas"
+                >
+                  {{ item.prestamos[item.prestamos.length - 1].fechaInicio | date: 'dd/MM/yyyy' }}
+                </ng-container>
+                <ng-template #sinPrestamosPrestadas>
+                  <span class="text-muted">Nunca</span>
+                </ng-template>
+              </td>
+              <td>
+                <button
+                  class="btn-eliminar"
+                  (click)="eliminar(item.id, item.nombre)"
+                  matTooltip="Eliminar préstamo"
+                  matTooltipPosition="above"
+                >
+                  Eliminar 🗑️
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- ================= DISPONIBLES ================= -->
+    <mat-tab label="Disponibles">
+      <div class="tabla-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Descripción</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+              <th>Último Préstamo</th>
               <th></th>
             </tr>
           </thead>
@@ -113,6 +139,16 @@
               <td>{{ item.descripcion }}</td>
               <td>{{ item.sitioGuardado }}</td>
               <td><span class="disponible">Disponible</span></td>
+              <td>
+                <ng-container
+                  *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosDisponibles"
+                >
+                  {{ item.prestamos[item.prestamos.length - 1].fechaInicio | date: 'dd/MM/yyyy' }}
+                </ng-container>
+                <ng-template #sinPrestamosDisponibles>
+                  <span class="text-muted">Nunca</span>
+                </ng-template>
+              </td>
               <td>
                 <button
                   class="btn-eliminar"

@@ -10,7 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { NativeDateAdapter, MatNativeDateModule, DateAdapter } from '@angular/material/core';
 import { MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { formatDate } from '@angular/common';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-add-ingreso',
@@ -36,75 +35,85 @@ import { ChangeDetectorRef } from '@angular/core';
 export class AddIngresoComponent {
   private dialogRef = inject(MatDialogRef<AddIngresoComponent>);
   private ingresoService = inject(GastoIngresoService);
-  private cdr = inject(ChangeDetectorRef);
 
-  monto: number | null = null;
-  descripcion = '';
-  fecha = '';
+  monto: string = '';
+  descripcion: string = '';
+  fecha: string = '';
   fechaDate: Date | null = null;
 
-  errorMonto = '';
-  errorDescripcion = '';
-  errorFecha = '';
+  errorMonto: string = '';
+  errorDescripcion: string = '';
+  errorFecha: string = '';
 
-  validarMonto(): boolean {
-    if (this.monto === null || this.monto === undefined) {
-      this.errorMonto = 'El monto es obligatorio y debe ser numérico';
-      return false;
+  validarMonto(): void {
+    const valor = this.monto.trim();
+    if (valor === '') {
+      this.errorMonto = 'El monto es obligatorio';
+      return;
     }
-    if (isNaN(this.monto)) {
-      this.errorMonto = 'El monto debe ser un número válido';
-      return false;
+    const valorNormalizado = valor.replace(',', '.');
+    const regex = /^\d+(\.\d+)?$/;
+    if (!regex.test(valorNormalizado)) {
+      this.errorMonto = 'El monto debe ser un número positivo (puede usar decimales)';
+      return;
     }
-    if (this.monto <= 0) {
+    const num = parseFloat(valorNormalizado);
+    if (isNaN(num) || num <= 0) {
       this.errorMonto = 'El monto debe ser mayor que 0';
-      return false;
-    } else {
-      this.errorMonto = '';
-      return true;
+      return;
     }
-    this.cdr.detectChanges();
+    this.errorMonto = '';
   }
 
-  validarDescripcion(): boolean {
+  validarDescripcion(): void {
     const desc = this.descripcion.trim();
-
-    if (!desc) {
+    if (desc === '') {
       this.errorDescripcion = 'La descripción es obligatoria';
-      return false;
     } else if (desc.length < 5) {
-      this.errorDescripcion = 'Debe tener al menos 5 caracteres';
-      return false;
+      this.errorDescripcion = 'La descripción debe tener al menos 5 caracteres';
+    } else {
+      this.errorDescripcion = '';
     }
-
-    this.errorDescripcion = '';
-    return true;
   }
 
-  validarFecha(): boolean {
+  validarFecha(): void {
     if (!this.fechaDate) {
       this.errorFecha = 'La fecha es obligatoria';
-      return false;
+    } else {
+      this.errorFecha = '';
     }
-    this.errorFecha = '';
-    return true;
   }
 
   onFechaChange(event: any): void {
     if (event.value) {
+      this.fechaDate = event.value;
       this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
+      this.errorFecha = '';
+    } else {
+      this.fechaDate = null;
+      this.fecha = '';
+      this.errorFecha = 'La fecha es obligatoria';
     }
+    this.validarFecha();
   }
 
   isFormValid(): boolean {
-    return this.validarMonto() && this.validarDescripcion() && this.validarFecha();
+    return (
+      this.monto.trim() !== '' &&
+      this.errorMonto === '' &&
+      this.descripcion.trim() !== '' &&
+      this.errorDescripcion === '' &&
+      this.fechaDate !== null &&
+      this.errorFecha === ''
+    );
   }
 
   confirm(): void {
     if (!this.isFormValid()) return;
 
+    const montoNumerico = parseFloat(this.monto.replace(',', '.'));
     this.ingresoService.addIngreso({
-      monto: this.monto!,
+      monto: montoNumerico,
       descripcion: this.descripcion.trim(),
       fechaIngreso: this.fecha,
     });

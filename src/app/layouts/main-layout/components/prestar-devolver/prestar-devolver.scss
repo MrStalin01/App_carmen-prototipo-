@@ -1,22 +1,43 @@
 :host {
   display: block;
-  background-color: #f5f0e8;
-  border-radius: 12px;
-  padding: 16px 24px 24px;
+  background-color: #f0f4f0;
+  border-radius: 16px;
+  padding: 20px 24px 24px;
 }
 
-h3 {
-  font-weight: 700;
+h3,
+[mat-dialog-title] {
+  font-weight: 600;
   color: #1a3a5c;
   margin: 0 0 16px 0;
   font-size: 1.2rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+::ng-deep .mat-mdc-tab-header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+}
+
+::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #1a6496 !important;
+}
+
+::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: #1a6496 !important;
 }
 
 .tab-content {
-  padding: 16px 0;
+  padding: 16px 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .campo {
@@ -25,24 +46,26 @@ h3 {
   gap: 6px;
 
   label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
     color: #333;
-    font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   select,
   input,
   textarea {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 8px 10px;
-    font-size: 0.95rem;
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
     font-family: inherit;
-    background: white;
+    transition: border-color 0.15s;
 
     &:focus {
-      border-color: #1a6496;
       outline: none;
+      border-color: #66bb6a;
     }
   }
 
@@ -51,46 +74,58 @@ h3 {
   }
 }
 
-.btn-prestar {
-  background-color: #1a6496;
-  color: white;
+.error {
+  color: #c62828;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.btn-prestar,
+.btn-devolver {
   border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 500;
+  font-size: 0.8rem;
   cursor: pointer;
   margin-top: 8px;
+  transition: background 0.15s;
 
   &:disabled {
-    background-color: #a0bcd4;
+    opacity: 0.5;
     cursor: not-allowed;
+  }
+}
+
+.btn-prestar {
+  background: #1a6496;
+  color: white;
+  &:hover:not(:disabled) {
+    background: #0f4d73;
   }
 }
 
 .btn-devolver {
-  background-color: #2e7d32;
+  background: #2e7d32;
   color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 8px;
+  &:hover:not(:disabled) {
+    background: #1b5e20;
+  }
+}
 
-  &:disabled {
-    background-color: #a0bcd4;
-    cursor: not-allowed;
+mat-dialog-actions button[mat-button] {
+  color: #666;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+
+  &:hover {
+    background: #e0e0e0;
   }
 }
 
 mat-dialog-actions {
-  padding-top: 16px;
-  margin-top: 8px;
-}
-
-.error {
-  color: #e53935;
-  font-size: 0.7rem;
-  margin-top: 4px;
-  display: block;
+  padding: 16px 0 0;
+  gap: 12px;
 }

@@ -1,112 +1,165 @@
-:host {
-  display: block;
-  background-color: #f5f0e8;
+.prestamos-container {
+  background-color: #f0f4f0;
   min-height: 100vh;
-  padding: 24px;
+  padding: 20px;
+}
+
+.buscar-wrapper {
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+.caja-buscador {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 6px 12px;
+  transition: border-color 0.15s;
+
+  &:focus-within {
+    border-color: #66bb6a;
+  }
+
+  i {
+    color: #aaa;
+    font-size: 14px;
+  }
+}
+
+.buscador {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  flex: 1;
+  color: #333;
+  &::placeholder {
+    color: #bbb;
+  }
 }
 
 .botones {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .btn-add,
 .btn-prestar {
-  border: none;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
   border-radius: 8px;
-  padding: 10px 20px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-add {
-  background-color: #1a6496;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  background: #2e7d32;
   color: white;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  i {
+    font-size: 14px;
+  }
 }
 
 .btn-prestar {
-  background-color: #2e7d32;
-  color: white;
+  background: #1a6496;
+}
+
+.btn-add:hover {
+  background: #1b5e20;
+}
+.btn-prestar:hover {
+  background: #0f4d73;
 }
 
 .tabla-wrapper {
-  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
   margin-top: 16px;
 }
 
-table {
+.table {
   width: 100%;
-  background-color: white;
+  margin-bottom: 0;
   border-collapse: collapse;
-  border-radius: 12px;
-  overflow: hidden;
-}
 
-th,
-td {
-  text-align: left;
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
-}
+  thead tr {
+    background: #f8faf8;
+  }
 
-th {
-  background-color: #1a3a5c;
-  color: white;
+  th {
+    font-size: 12px;
+    font-weight: 600;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 10px 12px;
+    border-bottom: 1.5px solid #e8e8e8;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: #f9fdf9;
+  }
 }
 
 .prestado {
-  background-color: #ffebee;
+  background: #ffebee;
   color: #c62828;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
 }
 
 .disponible {
-  background-color: #e8f5e9;
+  background: #e8f5e9;
   color: #2e7d32;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
 }
 
 .btn-eliminar {
-  background-color: #e53935;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
+  background: #fce4ec;
+  border: 1px solid #ef9a9a;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #c62828;
   cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #ffcdd2;
+    border-color: #e57373;
+  }
 }
 
-.buscar-wrapper {
-  margin-bottom: 1.5rem;
-  max-width: 500px;
-}
-
-.buscar-input {
-  width: 100%;
-}
-
-::ng-deep .buscar-input .mat-form-field-outline {
+.mat-form-field-appearance-outline .mat-form-field-outline {
   border-radius: 30px !important;
-}
-
-::ng-deep .buscar-input.mat-focused .mat-form-field-outline-thick {
-  color: #1a6496 !important;
-}
-
-.mat-icon.mat-prefix {
-  margin-right: 10px;
-  color: #6c757d;
-  transform: translateY(2px);
-}
-
-.buscar-input button.mat-icon-button {
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
 }
