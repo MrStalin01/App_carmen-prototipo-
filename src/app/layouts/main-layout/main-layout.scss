@@ -34,6 +34,25 @@ $bar-bg:         #b2dfdb;
   align-items: flex-end;
   gap: 12px;
 
+  button[mat-fab] {
+    background-color: $ava-green !important;
+    color: #fff !important;
+
+    &:hover {
+      background-color: $ava-green-dark !important;
+    }
+  }
+
+  // Botones mini (Nuevo socio, Nueva Actividad)
+  button[mat-mini-fab] {
+    background-color: $ava-green !important;
+    color: #fff !important;
+
+    &:hover {
+      background-color: $ava-green-dark !important;
+    }
+  }
+
   .fab-options {
     display: flex;
     flex-direction: column-reverse;

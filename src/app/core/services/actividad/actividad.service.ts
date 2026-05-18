@@ -5,24 +5,24 @@ import { Observable } from 'rxjs';
 const BASE = 'http://localhost:8080/api/v1';
 
 @Injectable({ providedIn: 'root' })
-export class SocioService {
+export class ActividadService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<any[]> {
-    return this.http.get<any[]>(`${BASE}/socio/all`);
+    return this.http.get<any[]>(`${BASE}/actividad/all`);
   }
 
-  add(socio: any): Observable<any> {
-    return this.http.post<any>(`${BASE}/socio/add`, socio);
+  add(actividad: any): Observable<any> {
+    return this.http.post<any>(`${BASE}/actividad/add`, actividad);
   }
 
-  update(id: string, socio: any): Observable<any> {
+  update(id: string, actividad: any): Observable<any> {
     const params = new HttpParams().set('id', id);
-    return this.http.patch<any>(`${BASE}/socio/update`, socio, { params });
+    return this.http.patch<any>(`${BASE}/actividad/update`, actividad, { params });
   }
 
   delete(id: string): Observable<any> {
     const params = new HttpParams().set('id', id);
-    return this.http.delete<any>(`${BASE}/socio/delete`, { params });
+    return this.http.delete<any>(`${BASE}/actividad/delete`, { params });
   }
 }

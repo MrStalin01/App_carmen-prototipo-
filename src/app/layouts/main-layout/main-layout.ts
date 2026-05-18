@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,6 +13,8 @@ import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
 import { RouterModule } from '@angular/router';
+import { SocioService } from '../../core/services/socios/socios.service';
+import { ActividadService } from '../../core/services/actividad/actividad.service';
 
 interface Socio {
   id: string;
@@ -45,9 +47,11 @@ interface Socio {
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss',
 })
-export class MainLayout {
+export class MainLayout implements OnInit {
   private dialog = inject(MatDialog);
   private router = inject(Router);
+  private socioService = inject(SocioService);
+  private actividadService = inject(ActividadService);
 
   filtrosAbiertos = false;
   sortColumn: 'nombres' | 'apellidos' | null = null;
@@ -66,138 +70,56 @@ export class MainLayout {
     { label: '9 → 0', activo: false },
   ];
 
-  // ── Array de cursos disponibles en la asociación ──────────────
-  // Cuando conectes con la API, rellena esto desde cursoService.getCursos()
-  cursosDisponibles: string[] = ['Yoga', 'Pilates', 'Zumba', 'Spinning'];
+  socios: Socio[] = [];
+  cursosDisponibles: string[] = [];
 
-  socios: Socio[] = [
-    {
-      id: '00',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '01',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '02',
-      nombres: 'María José',
-      apellidos: 'Rodríguez Blanco',
-      correo: 'mariajose.rodriguez@gmail.com',
-      tel: '+34 611 44 55 66',
-      dni: '30456789B',
-      estado: 'Activo',
-      fechaVenc: '12/03/2026',
-      profesor: 'No',
-      cursos: ['Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '03',
-      nombres: 'Alejandro',
-      apellidos: 'Torres Vega',
-      correo: 'alejandro.torres@gmail.com',
-      tel: '+34 633 77 88 99',
-      dni: '45678901C',
-      estado: 'Inactivo',
-      fechaVenc: '01/06/2025',
-      profesor: 'No',
-      cursos: [],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '04',
-      nombres: 'Laura',
-      apellidos: 'Sánchez Mora',
-      correo: 'laura.sanchez@gmail.com',
-      tel: '+34 699 12 34 56',
-      dni: '67890123D',
-      estado: 'Activo',
-      fechaVenc: '20/09/2026',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Zumba', 'Spinning'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '05',
-      nombres: 'Carlos Antonio',
-      apellidos: 'Jiménez Ruiz',
-      correo: 'carlos.jimenez@gmail.com',
-      tel: '+34 655 98 76 54',
-      dni: '89012345E',
-      estado: 'Activo',
-      fechaVenc: '30/11/2026',
-      profesor: 'No',
-      cursos: ['Spinning'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '06',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '07',
-      nombres: 'Felipe Carlos',
-      apellidos: 'Guzmán Segundo',
-      correo: 'FelipeCarlosGuzman@gmail.com',
-      tel: '+34 652 25 35 97',
-      dni: '52316377W',
-      estado: 'Activo',
-      fechaVenc: '05/01/2027',
-      profesor: 'Si',
-      cursos: ['Yoga', 'Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-    {
-      id: '08',
-      nombres: 'María José',
-      apellidos: 'Rodríguez Blanco',
-      correo: 'mariajose.rodriguez@gmail.com',
-      tel: '+34 611 44 55 66',
-      dni: '30456789B',
-      estado: 'Activo',
-      fechaVenc: '12/03/2026',
-      profesor: 'No',
-      cursos: ['Pilates'],
-      cursosAbiertos: false,
-      selected: false,
-    },
-  ];
+  ngOnInit(): void {
+    this.cargarSocios();
+    this.cargarActividades();
+  }
+
+  cargarSocios(): void {
+    this.socioService.getAll().subscribe((data: any[]) => {
+      this.socios = data.map((s: any) => ({
+        id: s.id,
+        nombres: s.informacionPersonalModel?.nombres ?? '',
+        apellidos: s.informacionPersonalModel?.apellidos ?? '',
+        correo: s.informacionPersonalModel?.correo ?? '',
+        tel: s.informacionPersonalModel?.telefono ?? '',
+        dni: s.informacionPersonalModel?.identificacion ?? '',
+        estado: s.estado_Socio ?? '',
+        fechaVenc: s.fecha_vencimiento ?? '',
+        profesor: s.tipo_socio === 'profesor' ? 'Si' : 'No',
+        cursos: Object.values(s.actividades ?? {}).flatMap((a: any) =>
+          (a.cursos ?? []).map((c: any) => c.nombreCurso)
+        ),
+        cursosAbiertos: false,
+        selected: false,
+      }));
+    });
+  }
+
+  cargarActividades(): void {
+    this.actividadService.getAll().subscribe((data: any[]) => {
+      this.cursosDisponibles = data.flatMap((a: any) =>
+        (a.cursos ?? []).map((c: any) => c.nombreCurso)
+      );
+    });
+  }
+
+  private mapToApiSocio(s: any): any {
+    return {
+      informacionPersonalModel: {
+        nombres: s.nombres,
+        apellidos: s.apellidos,
+        correo: s.correo,
+        telefono: s.tel,
+        identificacion: s.dni,
+      },
+      estado_Socio: s.estado,
+      tipo_socio: s.profesor === 'Si' ? 'profesor' : 'socio',
+    };
+  }
 
   get sociosFiltrados(): Socio[] {
     let lista = this.socios;
@@ -205,11 +127,9 @@ export class MainLayout {
     if (this.estadoFiltro !== 'todos') {
       lista = lista.filter((s) => s.estado === this.estadoFiltro);
     }
-
     if (this.profesorFiltro !== 'todos') {
       lista = lista.filter((s) => s.profesor === this.profesorFiltro);
     }
-
     if (this.textoBusqueda.trim()) {
       const texto = this.textoBusqueda.toLowerCase().trim();
       lista = lista.filter(
@@ -245,27 +165,19 @@ export class MainLayout {
 
   onCheckChange(): void {}
 
-  filtrarEstado() {
-    if (this.estadoFiltro === 'todos') {
-      this.estadoFiltro = 'Activo';
-    } else if (this.estadoFiltro === 'Activo') {
-      this.estadoFiltro = 'Inactivo';
-    } else {
-      this.estadoFiltro = 'todos';
-    }
+  filtrarEstado(): void {
+    if (this.estadoFiltro === 'todos') this.estadoFiltro = 'Activo';
+    else if (this.estadoFiltro === 'Activo') this.estadoFiltro = 'Inactivo';
+    else this.estadoFiltro = 'todos';
   }
 
-  filtrarProfesor() {
-    if (this.profesorFiltro === 'todos') {
-      this.profesorFiltro = 'Si';
-    } else if (this.profesorFiltro === 'Si') {
-      this.profesorFiltro = 'No';
-    } else {
-      this.profesorFiltro = 'todos';
-    }
+  filtrarProfesor(): void {
+    if (this.profesorFiltro === 'todos') this.profesorFiltro = 'Si';
+    else if (this.profesorFiltro === 'Si') this.profesorFiltro = 'No';
+    else this.profesorFiltro = 'todos';
   }
 
-  sortBy(col: 'nombres' | 'apellidos') {
+  sortBy(col: 'nombres' | 'apellidos'): void {
     if (this.sortColumn === col) {
       this.sortAsc = !this.sortAsc;
     } else {
@@ -279,86 +191,111 @@ export class MainLayout {
     });
   }
 
-  toggleFiltros() {
+  toggleFiltros(): void {
     this.filtrosAbiertos = !this.filtrosAbiertos;
   }
 
-  toggleChip(filtro: any) {
+  toggleChip(filtro: any): void {
     filtro.activo = !filtro.activo;
   }
 
-  openAddMember(socio?: Socio) {
+  openAddMember(socio?: Socio): void {
     const dialogRef = this.dialog.open(AddMember, {
       width: '480px',
       data: socio ?? null,
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
       if (socio) {
-        const index = this.socios.indexOf(socio);
-        this.socios[index] = { ...socio, ...result };
+        this.socioService.update(socio.id, this.mapToApiSocio(result)).subscribe(() => {
+          const index = this.socios.indexOf(socio);
+          this.socios[index] = { ...socio, ...result };
+        });
       } else {
-        this.socios.push(result);
+        this.socioService.add(this.mapToApiSocio(result)).subscribe((nuevo: any) => {
+          this.socios.push({
+            ...result,
+            id: nuevo.id,
+            cursosAbiertos: false,
+            selected: false,
+            cursos: [],
+          });
+        });
       }
     });
   }
 
-  openMember() {
+  openMember(): void {
     const nextNumero = this.socios.length + 1;
-    this.dialog.open(Member, {
-      data: { nextNumero },
+  const dialogRef = this.dialog.open(Member, {
+    data: { nextNumero },
+  });
+  dialogRef.afterClosed().subscribe((result: any) => {
+    if (!result) return;
+    this.socioService.add(this.mapToApiSocio(result)).subscribe((nuevo: any) => {
+      this.socios.push({
+        ...result,
+        id: nuevo.id,
+        cursosAbiertos: false,
+        selected: false,
+        cursos: [],
+      });
     });
+  });
   }
 
-  goToRegister() {
+  goToRegister(): void {
     this.router.navigate(['/register']);
   }
 
-  // ── Navega a la vista de cursos ───────────────────────────────
-  cursos() {
+  cursos(): void {
     this.router.navigate(['/cursos']);
   }
 
-  onEliminar(socio?: Socio) {
+  onEliminar(socio?: Socio): void {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    dialogRef.afterClosed().subscribe((confirmed: any) => {
       if (!confirmed) return;
       if (socio) {
-        this.socios = this.socios.filter((s) => s !== socio);
+        this.socioService.delete(socio.id).subscribe(() => {
+          this.socios = this.socios.filter((s) => s !== socio);
+        });
       } else {
-        this.socios = this.socios.filter((s) => !s.selected);
+        const seleccionados = this.socios.filter((s) => s.selected);
+        seleccionados.forEach((s) => {
+          this.socioService.delete(s.id).subscribe(() => {
+            this.socios = this.socios.filter((x) => x !== s);
+          });
+        });
       }
     });
   }
 
-  onModificar() {
+  onModificar(): void {
     console.log('Modificar');
   }
 
-  openAddCurso() {
-    // ── Usa cursosDisponibles, no cursos() ────────────────────
+  openAddCurso(): void {
     const dialogRef = this.dialog.open(AddCurso, {
       data: { cursosExistentes: this.cursosDisponibles },
     });
-
-    dialogRef.afterClosed().subscribe((nuevoCurso) => {
+    dialogRef.afterClosed().subscribe((nuevoCurso: any) => {
       if (!nuevoCurso) return;
-      // Si el nombre es nuevo, lo añadimos al array para futuras aperturas
-      if (!this.cursosDisponibles.includes(nuevoCurso.nombre)) {
-        this.cursosDisponibles.push(nuevoCurso.nombre);
-      }
+      this.actividadService.add(nuevoCurso).subscribe(() => {
+        this.cargarActividades();
+      });
     });
   }
 
-  onPagos() {
+  onPagos(): void {
     console.log('Pagos');
   }
 
-  onCorreo() {
+  onCorreo(): void {
     console.log('Correo', this.selectedSocios);
   }
 
-  submit() {
+  submit(): void {
     this.router.navigate(['/main']);
   }
 }
