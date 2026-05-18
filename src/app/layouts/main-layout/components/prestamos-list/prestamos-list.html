@@ -15,8 +15,22 @@
     </mat-form-field>
   </div>
   <div class="botones">
-    <button class="btn-add" (click)="abrirAddPrestamo()">Añadir herramienta</button>
-    <button class="btn-prestar" (click)="abrirPrestarDevolver()">Prestar / Devolver</button>
+    <button
+      class="btn-add"
+      (click)="abrirAddPrestamo()"
+      matTooltip="Añadir herramienta"
+      matTooltipPosition="above"
+    >
+      Añadir herramienta
+    </button>
+    <button
+      class="btn-prestar"
+      (click)="abrirPrestarDevolver()"
+      matTooltip="Prestar / Devolver"
+      matTooltipPosition="above"
+    >
+      Prestar / Devolver
+    </button>
   </div>
 
   <mat-tab-group>
