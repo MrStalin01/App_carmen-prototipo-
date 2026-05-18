@@ -18,7 +18,7 @@
         </button>
       </div>
     </div>
-    <button mat-fab color="primary" (click)="fabAbierto = !fabAbierto">
+    <button mat-fab (click)="fabAbierto = !fabAbierto">
       <mat-icon>{{ fabAbierto ? 'close' : 'add' }}</mat-icon>
     </button>
   </div>
@@ -28,12 +28,12 @@
       <i class="bi bi-people"></i>
       <span>Socios</span>
     </button>
-    <button class="action-bar-btn" (click)="onPagos()">
+    <button class="action-bar-btn" (click)="onGastos(); fabAbierto = false">
       <i class="bi bi-credit-card me-2"></i>
       <span>Pagos</span>
     </button>
     <button class="action-bar-btn">
-      <i class="bi bi-file-earmark-text"></i>
+      <i class="bi bi-file-earmark-text" (click)="onPrestamos(); fabAbierto = false"></i>
       <span>Prestamos</span>
     </button>
     <button class="action-bar-btn " (click)="cursos(); fabAbierto = false">
@@ -41,7 +41,7 @@
       <span>Cursos</span>
     </button>
     <button class="action-bar-btn">
-      <i class="bi bi-file-earmark-spreadsheet"></i>
+      <i class="bi bi-file-earmark-spreadsheet" (click)="onIngresos(); fabAbierto = false"></i>
       <span>Presupuestos</span>
     </button>
     <button class="action-bar-btn" (click)="goToRegister()">

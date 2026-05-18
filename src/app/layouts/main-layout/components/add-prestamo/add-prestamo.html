@@ -1,0 +1,42 @@
+<h3 mat-dialog-title>➕ Nueva herramienta</h3>
+
+<mat-dialog-content>
+  <div class="campo">
+    <label>Nombre de la herramienta *</label>
+    <input
+      [(ngModel)]="nombre"
+      (blur)="validarNombre()"
+      (input)="validarNombre()"
+      placeholder="Ej: Martillo, Taladro"
+    />
+    <small class="error" *ngIf="errores.nombre">{{ errores.nombre }}</small>
+  </div>
+
+  <div class="campo">
+    <label>Descripción *</label>
+    <textarea
+      [(ngModel)]="descripcion"
+      (blur)="validarDescripcion()"
+      (input)="validarDescripcion()"
+      rows="3"
+      placeholder="Ej: Martillo de carpintero"
+    ></textarea>
+    <small class="error" *ngIf="errores.descripcion">{{ errores.descripcion }}</small>
+  </div>
+
+  <div class="campo">
+    <label>Ubicación / sitio guardado *</label>
+    <input
+      [(ngModel)]="sitioGuardado"
+      (blur)="validarUbicacion()"
+      (input)="validarUbicacion()"
+      placeholder="Ej: Estante azul, Cajón rojo"
+    />
+    <small class="error" *ngIf="errores.sitioGuardado">{{ errores.sitioGuardado }}</small>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancelar</button>
+  <button class="btn-guardar" (click)="confirm()" [disabled]="!isFormValid()">Guardar</button>
+</mat-dialog-actions>

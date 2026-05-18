@@ -25,11 +25,11 @@
       <span>Socios</span>
     </button>
     <button class="action-bar-btn" routerLink="/pagos">
-      <i class="bi bi-credit-card"></i>
+      <i class="bi bi-credit-card" (click)="onGastos(); fabAbierto = false"></i>
       <span>Pagos</span>
     </button>
     <button class="action-bar-btn">
-      <i class="bi bi-file-earmark-text"></i>
+      <i class="bi bi-file-earmark-text" (click)="onPrestamos(); fabAbierto = false"></i>
       <span>Prestamos</span>
     </button>
     <button class="action-bar-btn active">
@@ -37,7 +37,7 @@
       <span>Cursos</span>
     </button>
     <button class="action-bar-btn">
-      <i class="bi bi-file-earmark-spreadsheet"></i>
+      <i class="bi bi-file-earmark-spreadsheet" (click)="onIngresos(); fabAbierto = false"></i>
       <span>Presupuestos</span>
     </button>
     <button class="action-bar-btn" (click)="goToRegister()">

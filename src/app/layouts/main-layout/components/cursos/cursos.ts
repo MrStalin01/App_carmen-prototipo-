@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DeleteMember } from '../delete-member/delete-member';
 import { AddCurso } from '../add-curso/add-curso';
+import { ActividadService } from '../../../../core/services/actividad/actividad.service';
 
 export interface Curso {
   id: string;
@@ -40,6 +41,10 @@ export interface Curso {
   ],
 })
 export class CursosComponent implements OnInit {
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private actividadService = inject(ActividadService);
+
   fabAbierto = false;
   filtrosAbiertos = false;
   textoBusqueda = '';
@@ -51,110 +56,49 @@ export class CursosComponent implements OnInit {
     { label: 'Sin plazas', activo: false },
   ];
 
-  cursos: Curso[] = [
-    {
-      id: '01',
-      nombre: 'Yoga para mayores',
-      descripcion: 'Sesiones adaptadas para personas mayores de 60 años',
-      ubicacion: 'Sala A - Planta baja',
-      profesor: 'Carmen López',
-      horario: '10:00 – 11:30',
-      dias: 'Lunes y Miércoles',
-      plazas: 20,
-      inscritos: 18,
-      activo: true,
-      fechaFin: '30/06/2026',
-      selected: false,
-    },
-    {
-      id: '02',
-      nombre: 'Informática básica',
-      descripcion: 'Manejo de ordenadores, correo electrónico e internet',
-      ubicacion: 'Aula de informática',
-      profesor: 'Raúl Fernández',
-      horario: '16:00 – 18:00',
-      dias: 'Martes y Jueves',
-      plazas: 15,
-      inscritos: 15,
-      activo: true,
-      fechaFin: '31/05/2026',
-      selected: false,
-    },
-    {
-      id: '03',
-      nombre: 'Pintura y acuarela',
-      descripcion: 'Técnicas de pintura para principiantes y nivel medio',
-      ubicacion: 'Taller de arte',
-      profesor: 'Marta Sanz',
-      horario: '11:00 – 13:00',
-      dias: 'Viernes',
-      plazas: 12,
-      inscritos: 7,
-      activo: true,
-      fechaFin: '30/06/2026',
-      selected: false,
-    },
-    {
-      id: '04',
-      nombre: 'Baile de salón',
-      descripcion: 'Rumba, vals y pasodoble para todas las edades',
-      ubicacion: 'Salón principal',
-      profesor: 'Antonio Ruiz',
-      horario: '18:00 – 20:00',
-      dias: 'Miércoles y Viernes',
-      plazas: 30,
-      inscritos: 24,
-      activo: true,
-      fechaFin: '30/09/2026',
-      selected: false,
-    },
-    {
-      id: '05',
-      nombre: 'Lectura y tertulias',
-      descripcion: 'Club de lectura con debate mensual de libros',
-      ubicacion: 'Biblioteca',
-      profesor: 'Isabel Torres',
-      horario: '17:00 – 19:00',
-      dias: 'Primer sábado del mes',
-      plazas: 25,
-      inscritos: 10,
-      activo: false,
-      fechaFin: '01/01/2026',
-      selected: false,
-    },
-  ];
-
+  cursos: Curso[] = [];
   cursosFiltrados: Curso[] = [];
 
-  get selectedCursos() {
+  get selectedCursos(): Curso[] {
     return this.cursos.filter((c) => c.selected);
   }
-  get allSelected() {
+  get allSelected(): boolean {
     return this.cursos.length > 0 && this.cursos.every((c) => c.selected);
   }
-  get someSelected() {
+  get someSelected(): boolean {
     return this.cursos.some((c) => c.selected) && !this.allSelected;
   }
 
-  toggleAll(event: Event) {
+  toggleAll(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     this.cursosFiltrados.forEach((c) => (c.selected = checked));
   }
 
-  onCheckChange() {
-    /* triggered by ngModel, no action needed */
+  onCheckChange(): void {}
+
+  ngOnInit(): void {
+    this.actividadService.getAll().subscribe((actividades: any[]) => {
+      this.cursos = actividades.flatMap((a: any) =>
+        (a.cursos ?? []).map((c: any) => ({
+          id: c.id,
+          nombre: c.nombreCurso,
+          descripcion: '',
+          ubicacion: c.ubicacion ?? '',
+          profesor: c.nombreProfesor ?? '',
+          horario: c.duracion ?? '',
+          dias: (c.clases ?? []).join(', '),
+          plazas: c.plazas ?? 0,
+          inscritos: 0,
+          activo: c.fecha_fin ? new Date(c.fecha_fin) >= new Date() : true,
+          fechaFin: c.fecha_fin ?? '',
+          selected: false,
+        }))
+      );
+      this.cursosFiltrados = [...this.cursos];
+    });
   }
 
-  constructor(
-    private router: Router,
-    private dialog: MatDialog,
-  ) {}
-
-  ngOnInit() {
-    this.cursosFiltrados = [...this.cursos];
-  }
-
-  filtrarCursos() {
+  filtrarCursos(): void {
     const texto = this.textoBusqueda.toLowerCase().trim();
     const filtrosActivos = this.filtros.filter((f) => f.activo).map((f) => f.label);
 
@@ -178,32 +122,46 @@ export class CursosComponent implements OnInit {
     });
   }
 
-  toggleFiltros() {
+  toggleFiltros(): void {
     this.filtrosAbiertos = !this.filtrosAbiertos;
   }
 
-  toggleChip(filtro: { label: string; activo: boolean }) {
+  toggleChip(filtro: { label: string; activo: boolean }): void {
     filtro.activo = !filtro.activo;
     this.filtrarCursos();
   }
 
-  goToRegister() {
+  goToRegister(): void {
     this.router.navigate(['/register']);
   }
-  onEliminar() {
+
+  onEliminar(): void {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    dialogRef.afterClosed().subscribe((confirmed: any) => {
       if (!confirmed) return;
-      console.log('Miembro eliminado'); // aquí llamarás al servicio
+      console.log('Eliminar — conectar con actividadService.delete()');
     });
   }
-  onModificar() {
+
+  onModificar(): void {
     console.log('Modificar');
   }
-  openAddCurso() {
+
+  openAddCurso(): void {
     this.dialog.open(AddCurso, { width: '400px' });
   }
-  submit() {
-    this.router.navigate(['/main'])
+
+  submit(): void {
+    this.router.navigate(['/main']);
   }
+  onPrestamos() {
+    this.router.navigate(['/prestamos']);
+  }
+  onGastos() {
+    this.router.navigate(['/gastos']);
+  }
+  onIngresos() {
+    this.router.navigate(['/ingresos']);
+  }
+
 }
