@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CursoService, Curso } from '../../services/curso';
 
 @Component({
-  selector: 'app-cursos-member',
+  selector: 'app-cursos-add-member',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule],
   templateUrl: './cursos-member.html',
