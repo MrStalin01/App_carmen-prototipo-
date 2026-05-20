@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { FormsModule } from '@angular/forms';
 import { AddMember } from './components/add-member/add-member';
+import { ModifyMember } from './components/modify-member/modify-member';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Member } from './components/member/member';
@@ -48,9 +49,9 @@ interface Socio {
   styleUrl: './main-layout.scss',
 })
 export class MainLayout implements OnInit {
-  private dialog = inject(MatDialog);
-  private router = inject(Router);
-  private socioService = inject(SocioService);
+  private dialog          = inject(MatDialog);
+  private router          = inject(Router);
+  private socioService    = inject(SocioService);
   private actividadService = inject(ActividadService);
 
   filtrosAbiertos = false;
@@ -60,64 +61,96 @@ export class MainLayout implements OnInit {
   profesorFiltro: 'todos' | 'Si' | 'No' = 'todos';
   textoBusqueda = '';
 
+
+  cargando = false;
+  errorCarga: string | null = null;
+
   filtros = [
-    { label: 'Activo', activo: false },
+    { label: 'Activo',   activo: false },
     { label: 'Inactivo', activo: false },
     { label: 'Profesor', activo: false },
-    { label: 'A → Z', activo: false },
-    { label: 'Z → A', activo: false },
-    { label: '0 → 9', activo: false },
-    { label: '9 → 0', activo: false },
+    { label: 'A → Z',   activo: false },
+    { label: 'Z → A',   activo: false },
+    { label: '0 → 9',   activo: false },
+    { label: '9 → 0',   activo: false },
   ];
 
   socios: Socio[] = [];
   cursosDisponibles: string[] = [];
+
 
   ngOnInit(): void {
     this.cargarSocios();
     this.cargarActividades();
   }
 
+
   cargarSocios(): void {
-    this.socioService.getAll().subscribe((data: any[]) => {
-      this.socios = data.map((s: any) => ({
-        id: s.id,
-        nombres: s.informacionPersonalModel?.nombres ?? '',
-        apellidos: s.informacionPersonalModel?.apellidos ?? '',
-        correo: s.informacionPersonalModel?.correo ?? '',
-        tel: s.informacionPersonalModel?.telefono ?? '',
-        dni: s.informacionPersonalModel?.identificacion ?? '',
-        estado: s.estado_Socio ?? '',
-        fechaVenc: s.fecha_vencimiento ?? '',
-        profesor: s.tipo_socio === 'profesor' ? 'Si' : 'No',
-        cursos: Object.values(s.actividades ?? {}).flatMap((a: any) =>
-          (a.cursos ?? []).map((c: any) => c.nombreCurso)
-        ),
-        cursosAbiertos: false,
-        selected: false,
-      }));
+    this.cargando = true;
+    this.errorCarga = null;
+
+    this.socioService.getAll().subscribe({
+      next: (data: any[]) => {
+        this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
+        this.cargando = false;
+      },
+      error: (err: any) => {
+        console.error('Error GET /socio/all:', err);
+        this.errorCarga = 'No se pudo cargar la lista de socios.';
+        this.cargando = false;
+      },
     });
   }
 
   cargarActividades(): void {
-    this.actividadService.getAll().subscribe((data: any[]) => {
-      this.cursosDisponibles = data.flatMap((a: any) =>
-        (a.cursos ?? []).map((c: any) => c.nombreCurso)
-      );
+    this.actividadService.getAll().subscribe({
+      next: (data: any[]) => {
+        this.cursosDisponibles = data.flatMap((a: any) =>
+          (a.cursos ?? []).map((c: any) => c.nombreCurso)
+        );
+      },
+      error: (err: any) => {
+        console.error('Error cargando actividades:', err);
+      },
     });
+  }
+
+
+  private mapearSocio(s: any): Socio {
+    const info = s.informacionPersonalModel ?? {};
+
+
+    const cursos: string[] = Object.values(s.actividades ?? {}).flatMap(
+      (a: any) => (a.cursos ?? []).map((c: any) => c.nombreCurso ?? c.id ?? '')
+    );
+
+    return {
+      id:            s.id               ?? s._id       ?? '',
+      nombres:       info.nombres        ?? '',
+      apellidos:     info.apellidos      ?? '',
+      correo:        info.correo         ?? '',
+      tel:           info.telefono       ?? '',
+      dni:           info.identificacion ?? '',
+      estado:        s.estado_Socio      ?? 'Inactivo',
+      fechaVenc:     s.fecha_vencimiento ?? '',
+      profesor:      s.tipo_socio?.toLowerCase() === 'profesor' ? 'Si' : 'No',
+      cursos,
+      cursosAbiertos: false,
+      selected:       false,
+    };
   }
 
   private mapToApiSocio(s: any): any {
     return {
       informacionPersonalModel: {
-        nombres: s.nombres,
-        apellidos: s.apellidos,
-        correo: s.correo,
-        telefono: s.tel,
+        nombres:        s.nombres,
+        apellidos:      s.apellidos,
+        correo:         s.correo,
+        telefono:       s.tel,
         identificacion: s.dni,
       },
       estado_Socio: s.estado,
-      tipo_socio: s.profesor === 'Si' ? 'profesor' : 'socio',
+      tipo_socio:   s.profesor === 'Si' ? 'profesor' : 'socio',
     };
   }
 
@@ -140,7 +173,6 @@ export class MainLayout implements OnInit {
           s.dni.toLowerCase().includes(texto),
       );
     }
-
     return lista;
   }
 
@@ -162,19 +194,18 @@ export class MainLayout implements OnInit {
   }
 
   fabAbierto = false;
-
   onCheckChange(): void {}
 
   filtrarEstado(): void {
-    if (this.estadoFiltro === 'todos') this.estadoFiltro = 'Activo';
-    else if (this.estadoFiltro === 'Activo') this.estadoFiltro = 'Inactivo';
-    else this.estadoFiltro = 'todos';
+    this.estadoFiltro =
+      this.estadoFiltro === 'todos'   ? 'Activo'   :
+      this.estadoFiltro === 'Activo'  ? 'Inactivo' : 'todos';
   }
 
   filtrarProfesor(): void {
-    if (this.profesorFiltro === 'todos') this.profesorFiltro = 'Si';
-    else if (this.profesorFiltro === 'Si') this.profesorFiltro = 'No';
-    else this.profesorFiltro = 'todos';
+    this.profesorFiltro =
+      this.profesorFiltro === 'todos' ? 'Si'  :
+      this.profesorFiltro === 'Si'    ? 'No'  : 'todos';
   }
 
   sortBy(col: 'nombres' | 'apellidos'): void {
@@ -191,28 +222,57 @@ export class MainLayout implements OnInit {
     });
   }
 
-  toggleFiltros(): void {
-    this.filtrosAbiertos = !this.filtrosAbiertos;
-  }
-
-  toggleChip(filtro: any): void {
-    filtro.activo = !filtro.activo;
-  }
+  toggleFiltros(): void { this.filtrosAbiertos = !this.filtrosAbiertos; }
+  toggleChip(filtro: any): void { filtro.activo = !filtro.activo; }
 
   openAddMember(socio?: Socio): void {
-    const dialogRef = this.dialog.open(AddMember, {
-      width: '480px',
-      data: socio ?? null,
+    if (socio) {
+      const dialogRef = this.dialog.open(ModifyMember, {
+        width: '480px',
+        data: socio,
+      });
+      dialogRef.afterClosed().subscribe((result: any) => {
+        if (!result) return;
+        this.socioService.update(socio.id, this.mapToApiSocio(result)).subscribe({
+          next: () => {
+            const index = this.socios.indexOf(socio);
+            if (index !== -1) this.socios[index] = { ...socio, ...result };
+          },
+          error: (err: any) => console.error('Error UPDATE socio:', err),
+        });
+      });
+    } else {
+      const dialogRef = this.dialog.open(AddMember, {
+        width: '480px',
+        data: null,
+      });
+      dialogRef.afterClosed().subscribe((result: any) => {
+        if (!result) return;
+        this.socioService.add(this.mapToApiSocio(result)).subscribe({
+          next: (nuevo: any) => {
+            this.socios.push({
+              ...result,
+              id: nuevo.id,
+              cursosAbiertos: false,
+              selected: false,
+              cursos: [],
+            });
+          },
+          error: (err: any) => console.error('Error ADD socio:', err),
+        });
+      });
+    }
+  }
+
+  openMember(): void {
+    const nextNumero = this.socios.length + 1;
+    const dialogRef = this.dialog.open(Member, {
+      data: { nextNumero },
     });
     dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
-      if (socio) {
-        this.socioService.update(socio.id, this.mapToApiSocio(result)).subscribe(() => {
-          const index = this.socios.indexOf(socio);
-          this.socios[index] = { ...socio, ...result };
-        });
-      } else {
-        this.socioService.add(this.mapToApiSocio(result)).subscribe((nuevo: any) => {
+      this.socioService.add(this.mapToApiSocio(result)).subscribe({
+        next: (nuevo: any) => {
           this.socios.push({
             ...result,
             id: nuevo.id,
@@ -220,60 +280,51 @@ export class MainLayout implements OnInit {
             selected: false,
             cursos: [],
           });
-        });
-      }
-    });
-  }
-
-  openMember(): void {
-    const nextNumero = this.socios.length + 1;
-  const dialogRef = this.dialog.open(Member, {
-    data: { nextNumero },
-  });
-  dialogRef.afterClosed().subscribe((result: any) => {
-    if (!result) return;
-    this.socioService.add(this.mapToApiSocio(result)).subscribe((nuevo: any) => {
-      this.socios.push({
-        ...result,
-        id: nuevo.id,
-        cursosAbiertos: false,
-        selected: false,
-        cursos: [],
+        },
+        error: (err: any) => console.error('Error ADD socio (Member):', err),
       });
     });
-  });
   }
 
-  goToRegister(): void {
-    this.router.navigate(['/register']);
-  }
-
-  cursos(): void {
-    this.router.navigate(['/cursos']);
-  }
+  goToRegister(): void { this.router.navigate(['/register']); }
+  cursos(): void       { this.router.navigate(['/cursos']); }
 
   onEliminar(socio?: Socio): void {
     const dialogRef = this.dialog.open(DeleteMember, { width: '400px' });
+
     dialogRef.afterClosed().subscribe((confirmed: any) => {
       if (!confirmed) return;
+
       if (socio) {
-        this.socioService.delete(socio.id).subscribe(() => {
-          this.socios = this.socios.filter((s) => s !== socio);
+        // ── Eliminar un socio concreto ──────────────────────────
+        this.socioService.delete(socio.id).subscribe({
+          next: () => {
+            this.socios = this.socios.filter((s) => s !== socio);
+          },
+          error: (err: any) => console.error('Error DELETE socio:', err),
         });
       } else {
+        // ── Eliminar todos los seleccionados ────────────────────
         const seleccionados = this.socios.filter((s) => s.selected);
+        let completados = 0;
+
         seleccionados.forEach((s) => {
-          this.socioService.delete(s.id).subscribe(() => {
-            this.socios = this.socios.filter((x) => x !== s);
+          this.socioService.delete(s.id).subscribe({
+            next: () => {
+              completados++;
+              // Refrescamos la lista solo cuando todas las peticiones terminen
+              if (completados === seleccionados.length) {
+                this.socios = this.socios.filter((x) => !x.selected);
+              }
+            },
+            error: (err: any) => console.error(`Error al eliminar socio ${s.id}:`, err),
           });
         });
       }
     });
   }
 
-  onModificar(): void {
-    console.log('Modificar');
-  }
+  onModificar(): void { console.log('Modificar'); }
 
   openAddCurso(): void {
     const dialogRef = this.dialog.open(AddCurso, {
@@ -281,30 +332,18 @@ export class MainLayout implements OnInit {
     });
     dialogRef.afterClosed().subscribe((nuevoCurso: any) => {
       if (!nuevoCurso) return;
-      this.actividadService.add(nuevoCurso).subscribe(() => {
-        this.cargarActividades();
+      this.actividadService.add(nuevoCurso).subscribe({
+        next: () => this.cargarActividades(),
+        error: (err: any) => console.error('Error ADD actividad:', err),
       });
     });
   }
 
-  onPagos(): void {
-    console.log('Pagos');
-  }
+  onPagos(): void  { console.log('Pagos'); }
+  onCorreo(): void { console.log('Correo', this.selectedSocios); }
+  submit(): void   { this.router.navigate(['/main']); }
 
-  onCorreo(): void {
-    console.log('Correo', this.selectedSocios);
-  }
-
-  submit(): void {
-    this.router.navigate(['/main']);
-  }
-  onPrestamos() {
-    this.router.navigate(['/prestamos']);
-  }
-  onGastos() {
-    this.router.navigate(['/gastos']);
-  }
-  onIngresos() {
-    this.router.navigate(['/ingresos']);
-  }
+  onPrestamos(): void { this.router.navigate(['/prestamos']); }
+  onGastos(): void    { this.router.navigate(['/gastos']); }
+  onIngresos(): void  { this.router.navigate(['/ingresos']); }
 }

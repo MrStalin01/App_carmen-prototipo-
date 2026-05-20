@@ -1,0 +1,48 @@
+<div class="header-row">
+  <span class="socio-label">socio nº{{ socioNumero }}</span>
+  <button class="close-btn" (click)="cancel()">✕</button>
+</div>
+<div class="title">
+  <mat-icon>info</mat-icon>
+  <h2>Modificar Socio</h2>
+</div>
+<mat-dialog-content [formGroup]="form">
+  <div class="fields">
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="name" placeholder="Nombre" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="apellidos" placeholder="Apellidos" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="email" type="email" placeholder="Email" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="phone" placeholder="Teléfono" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="dni" placeholder="DNI/NIE" />
+    </mat-form-field>
+    <div class="radio-group">
+      <span class="radio-label">¿Profesor?</span>
+      <mat-radio-group formControlName="profesor">
+        <mat-radio-button [value]="true">Sí</mat-radio-button>
+        <mat-radio-button [value]="false">No</mat-radio-button>
+      </mat-radio-group>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    class="btn-estado"
+    [class.btn-activo]="form.get('activo')?.value"
+    [class.btn-inactivo]="!form.get('activo')?.value"
+    (click)="form.get('activo')?.setValue(!form.get('activo')?.value)">
+    <span class="dot-estado"></span>
+    {{ form.get('activo')?.value ? 'Activo' : 'Inactivo' }}
+  </button>
+  <button class="btn-activate" (click)="guardar()">
+    {{ esEdicion() ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
