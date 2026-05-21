@@ -9,7 +9,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { CommonModule } from '@angular/common';
 import { EmailValidator } from '../../../../core/validators/email.validator';
 import { DniValidator } from '../../../../core/validators/dni.validator';
-import { SociosService } from '../../../../core/services/socios/socios.service';
+import { SocioService } from '../../../../core/services/socios/socios.service';
 
 @Component({
   selector: 'app-add-member',
@@ -28,9 +28,9 @@ import { SociosService } from '../../../../core/services/socios/socios.service';
   styleUrl: './add-member.scss',
 })
 export class AddMember {
-  private dialogRef = inject(MatDialogRef<AddMember>);
-  private fb        = inject(FormBuilder);
-  private sociosSvc = inject(SociosService);
+  private dialogRef  = inject(MatDialogRef<AddMember>);
+  private fb         = inject(FormBuilder);
+  private socioService = inject(SocioService);
 
   form: FormGroup;
   nextNumero: number;
@@ -55,7 +55,7 @@ export class AddMember {
 
   esEdicion(): boolean { return !!this.data?.id; }
 
-  guardar() {
+  guardar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -64,7 +64,6 @@ export class AddMember {
     const val = this.form.value;
 
     // ── Payload anidado que espera el servidor ──────────────────
-    // Los campos no recogidos en el formulario se envían como null
     const payload = {
       informacionPersonalModel: {
         identificacion: val.dni       ?? null,
@@ -72,12 +71,12 @@ export class AddMember {
         apellidos:      val.apellidos ?? null,
         correo:         val.email     ?? null,
         telefono:       val.phone     ?? null,
-        contrasena:     null,                   // no se recoge en el form
+        contrasena:     null,
       },
       estado_Socio:      val.activo   ? 'Activo' : 'Inactivo',
       tipo_socio:        val.profesor ? 'Profesor' : 'Socio',
-      ultimo_pago:       null,   //  no se recoge en el form
-      fecha_vencimiento: null,   // no se recoge en el form
+      ultimo_pago:       null,
+      fecha_vencimiento: null,
       historial_pagos:   [],
       actividades:       {},
     };
@@ -85,27 +84,25 @@ export class AddMember {
     this.guardando = true;
     this.error = null;
 
-    this.sociosSvc.guardar(payload).subscribe({
-      next: (res) => {
+    this.socioService.add(payload).subscribe({
+      next: (res: any) => {
         this.guardando = false;
-        // Cerramos el diálogo devolviendo los datos en el formato
-        // que usa main-layout para su array local
         this.dialogRef.close({
-          id:        res?.id ?? null,
-          nombres:   val.name,
-          apellidos: val.apellidos,
-          correo:    val.email,
-          tel:       val.phone,
-          dni:       val.dni,
-          profesor:  val.profesor ? 'Si' : 'No',
-          estado:    val.activo   ? 'Activo' : 'Inactivo',
-          fechaVenc: null,
-          cursos:    [],
+          id:            res?.id ?? null,
+          nombres:       val.name,
+          apellidos:     val.apellidos,
+          correo:        val.email,
+          tel:           val.phone,
+          dni:           val.dni,
+          profesor:      val.profesor ? 'Si' : 'No',
+          estado:        val.activo   ? 'Activo' : 'Inactivo',
+          fechaVenc:     null,
+          cursos:        [],
           cursosAbiertos: false,
-          selected:  false,
+          selected:      false,
         });
       },
-      error: (err) => {
+      error: (err: any) => {
         this.guardando = false;
         this.error = 'Error al guardar el socio. Revisa la conexión con el servidor.';
         console.error('Error POST /socio/add:', err);
@@ -113,5 +110,5 @@ export class AddMember {
     });
   }
 
-  cancel() { this.dialogRef.close(null); }
+  cancel(): void { this.dialogRef.close(null); }
 }

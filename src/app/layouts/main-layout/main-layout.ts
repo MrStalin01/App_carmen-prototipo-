@@ -9,7 +9,6 @@ import { AddMember } from './components/add-member/add-member';
 import { ModifyMember } from './components/modify-member/modify-member';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Member } from './components/member/member';
 import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
@@ -266,7 +265,7 @@ export class MainLayout implements OnInit {
 
   openMember(): void {
     const nextNumero = this.socios.length + 1;
-    const dialogRef = this.dialog.open(Member, {
+    const dialogRef = this.dialog.open(ModifyMember, {
       data: { nextNumero },
     });
     dialogRef.afterClosed().subscribe((result: any) => {
