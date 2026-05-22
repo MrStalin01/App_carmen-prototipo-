@@ -9,7 +9,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { CommonModule } from '@angular/common';
 import { EmailValidator } from '../../../../core/validators/email.validator';
 import { DniValidator } from '../../../../core/validators/dni.validator';
-import { SocioService } from '../../../../core/services/socios/socios.service';
+import { SociosService } from '../../../../core/services/socios/socios.service';
 
 @Component({
   selector: 'app-add-member',
@@ -30,7 +30,7 @@ import { SocioService } from '../../../../core/services/socios/socios.service';
 export class AddMember {
   private dialogRef  = inject(MatDialogRef<AddMember>);
   private fb         = inject(FormBuilder);
-  private socioService = inject(SocioService);
+  private sociosService = inject(SociosService);
 
   form: FormGroup;
   nextNumero: number;
@@ -84,7 +84,7 @@ export class AddMember {
     this.guardando = true;
     this.error = null;
 
-    this.socioService.add(payload).subscribe({
+    this.sociosService.guardar(payload).subscribe({
       next: (res: any) => {
         this.guardando = false;
         this.dialogRef.close({

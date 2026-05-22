@@ -13,7 +13,7 @@ import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
 import { RouterModule } from '@angular/router';
-import { SocioService } from '../../core/services/socios/socios.service';
+import { SociosService } from '../../core/services/socios/socios.service';
 import { ActividadService } from '../../core/services/actividad/actividad.service';
 
 interface Socio {
@@ -50,7 +50,7 @@ interface Socio {
 export class MainLayout implements OnInit {
   private dialog          = inject(MatDialog);
   private router          = inject(Router);
-  private socioService    = inject(SocioService);
+  private socioService    = inject(SociosService);
   private actividadService = inject(ActividadService);
 
   filtrosAbiertos = false;
@@ -88,7 +88,7 @@ export class MainLayout implements OnInit {
     this.cargando = true;
     this.errorCarga = null;
 
-    this.socioService.getAll().subscribe({
+    this.socioService.getSocios().subscribe({
       next: (data: any[]) => {
         this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
         this.cargando = false;
@@ -234,7 +234,7 @@ export class MainLayout implements OnInit {
       });
       dialogRef.afterClosed().subscribe((result: any) => {
         if (!result) return;
-        this.socioService.add(this.mapToApiSocio(result)).subscribe({
+        this.socioService.guardar(this.mapToApiSocio(result)).subscribe({
           next: (nuevo: any) => {
             this.socios.push({
               ...result,
@@ -257,7 +257,7 @@ export class MainLayout implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
-      this.socioService.add(this.mapToApiSocio(result)).subscribe({
+      this.socioService.guardar(this.mapToApiSocio(result)).subscribe({
         next: (nuevo: any) => {
           this.socios.push({
             ...result,
@@ -283,7 +283,7 @@ export class MainLayout implements OnInit {
 
       if (socio) {
         // ── Eliminar un socio concreto ──────────────────────────
-        this.socioService.delete(socio.id).subscribe({
+        this.socioService.deleteSocio(socio.id).subscribe({
           next: () => {
             this.socios = this.socios.filter((s) => s !== socio);
           },
@@ -295,7 +295,7 @@ export class MainLayout implements OnInit {
         let completados = 0;
 
         seleccionados.forEach((s) => {
-          this.socioService.delete(s.id).subscribe({
+          this.socioService.deleteSocio(s.id).subscribe({
             next: () => {
               completados++;
               // Refrescamos la lista solo cuando todas las peticiones terminen
@@ -318,7 +318,7 @@ export class MainLayout implements OnInit {
     });
     dialogRef.afterClosed().subscribe((nuevoCurso: any) => {
       if (!nuevoCurso) return;
-      this.actividadService.add(nuevoCurso).subscribe({
+      this.actividadService.guardar(nuevoCurso).subscribe({
         next: () => this.cargarActividades(),
         error: (err: any) => console.error('Error ADD actividad:', err),
       });
@@ -332,4 +332,5 @@ export class MainLayout implements OnInit {
   onPrestamos(): void { this.router.navigate(['/prestamos']); }
   onGastos(): void    { this.router.navigate(['/gastos']); }
   onIngresos(): void  { this.router.navigate(['/ingresos']); }
+
 }
