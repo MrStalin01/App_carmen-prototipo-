@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SociosService {
-  // ── Apunta a tu backend local ──────────────────────────────────
+
   private URL = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) {}
@@ -43,4 +43,10 @@ export class SociosService {
     }
     return this.http.delete<any>(`${this.URL}/socio/delete`, { params });
   }
+
+  update(id: string, actividad: any): Observable<any> {
+    const params = new HttpParams().set('id', id);
+    return this.http.patch<any>(`${this.URL}/actividad/update`, actividad, { params });
+  }
+
 }

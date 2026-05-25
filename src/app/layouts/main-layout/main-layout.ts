@@ -114,6 +114,20 @@ export class MainLayout implements OnInit {
     });
   }
 
+  private mapToApiSocio(s: any): any {
+ return {
+   informacionPersonalModel: {
+     nombres: s.nombres,
+     apellidos: s.apellidos,
+     correo: s.correo,
+     telefono: s.tel,
+     identificacion: s.dni,
+   },
+   estado_Socio: s.estado,
+   tipo_socio: s.profesor === 'Si' ? 'profesor' : 'socio',
+ };
+}
+
 
   private mapearSocio(s: any): Socio {
     const info = s.informacionPersonalModel ?? {};
@@ -318,7 +332,7 @@ export class MainLayout implements OnInit {
     });
     dialogRef.afterClosed().subscribe((nuevoCurso: any) => {
       if (!nuevoCurso) return;
-      this.actividadService.guardar(nuevoCurso).subscribe({
+      this.actividadService.add(nuevoCurso).subscribe({
         next: () => this.cargarActividades(),
         error: (err: any) => console.error('Error ADD actividad:', err),
       });
