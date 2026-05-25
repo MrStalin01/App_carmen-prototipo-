@@ -65,7 +65,7 @@ export class PrestamoService {
     );
   }
 
-  eliminarObjeto(nombre: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/delete?nombre=${nombre}`);
+  eliminarObjeto(nombre: string): Observable<string> {
+    return this.http.delete(`${this.apiUrl}/delete?nombre=${nombre}`, { responseType: 'text' });
   }
 }
