@@ -1,15 +1,15 @@
-import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatDialog, MatDialogClose } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PrestamoService, objeto } from '../../services/prestamo.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { PrestamoService, Objeto } from '../../services/prestamo.service';
 import { AddPrestamo } from '../add-prestamo/add-prestamo';
 import { PrestarDevolverComponent } from '../prestar-devolver/prestar-devolver';
 import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service';
@@ -19,13 +19,12 @@ import { ConfirmDialogService } from '../../../../shared/confirm-dialog.service'
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatButtonModule,
     MatCardModule,
     MatIconModule,
     MatTabsModule,
     MatTooltipModule,
-    MatDialogClose,
-    FormsModule,
     MatFormFieldModule,
     MatInputModule,
   ],
@@ -37,9 +36,9 @@ export class PrestamosListComponent implements OnInit {
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
 
-  todas = signal<objeto[]>([]);
-  prestadas = signal<objeto[]>([]);
-  disponibles = signal<objeto[]>([]);
+  todas = signal<Objeto[]>([]);
+  prestadas = signal<Objeto[]>([]);
+  disponibles = signal<Objeto[]>([]);
   searchTerm = signal('');
 
   todasFiltradas = computed(() =>
@@ -63,9 +62,14 @@ export class PrestamosListComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    this.todas.set(this.prestamoService.getObjetos());
-    this.prestadas.set(this.prestamoService.getPrestados());
-    this.disponibles.set(this.prestamoService.getDisponibles());
+    this.prestamoService.getObjetos().subscribe({
+      next: (data) => {
+        this.todas.set(data);
+        this.prestadas.set(data.filter((o) => o.prestadoActual));
+        this.disponibles.set(data.filter((o) => !o.prestadoActual));
+      },
+      error: (err) => console.error('Error al cargar objetos', err),
+    });
   }
 
   clearSearch(): void {
@@ -73,22 +77,14 @@ export class PrestamosListComponent implements OnInit {
   }
 
   abrirAddPrestamo(): void {
-    const dialogRef = this.dialog.open(AddPrestamo, {
-      width: '500px',
-    });
-
+    const dialogRef = this.dialog.open(AddPrestamo, { width: '500px' });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.cargarDatos();
-      }
+      if (result) this.cargarDatos();
     });
   }
 
   abrirPrestarDevolver(): void {
-    const dialogRef = this.dialog.open(PrestarDevolverComponent, {
-      width: '600px',
-    });
-
+    const dialogRef = this.dialog.open(PrestarDevolverComponent, { width: '600px' });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.cargarDatos();
@@ -96,7 +92,7 @@ export class PrestamosListComponent implements OnInit {
     });
   }
 
-  eliminar(id: number, nombre: string): void {
+  eliminar(nombre: string): void {
     this.confirmDialog
       .confirm({
         title: 'Eliminar herramienta',
@@ -106,8 +102,10 @@ export class PrestamosListComponent implements OnInit {
       })
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.prestamoService.eliminarObjeto(id);
-          this.cargarDatos();
+          this.prestamoService.eliminarObjeto(nombre).subscribe({
+            next: () => this.cargarDatos(),
+            error: (err) => console.error('Error al Eliminar', err),
+          });
         }
       });
   }

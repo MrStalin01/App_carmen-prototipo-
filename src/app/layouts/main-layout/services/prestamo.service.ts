@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface PrestamoRegistro {
   id: number;
@@ -8,8 +10,8 @@ export interface PrestamoRegistro {
   anotaciones: string;
 }
 
-export interface objeto {
-  id: number;
+export interface Objeto {
+  id: string;
   nombre: string;
   referencia: string;
   descripcion: string;
@@ -20,117 +22,50 @@ export interface objeto {
 
 @Injectable({ providedIn: 'root' })
 export class PrestamoService {
-  private nextId = 1;
-  private nextPrestamoId = 1;
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8081/api/v1/objeto';
 
-  objetos = signal<objeto[]>([
-    {
-      id: this.nextId++,
-      nombre: 'Martillo',
-      referencia: '',
-      descripcion: 'Martillo de carpintero',
-      sitioGuardado: 'Cajón rojo',
-      prestadoActual: false,
-      prestamos: [],
-    },
-    {
-      id: this.nextId++,
-      nombre: 'Taladro',
-      referencia: '',
-      descripcion: 'Taladro percutor',
-      sitioGuardado: 'Estante azul',
-      prestadoActual: true,
-      prestamos: [
-        {
-          id: this.nextPrestamoId++,
-          fechaInicio: new Date(2026, 4, 10),
-          fechaFin: null,
-          prestadoA: 'Juan Pérez',
-          anotaciones: 'Préstamo de ejemplo',
-        },
-      ],
-    },
-    {
-      id: this.nextId++,
-      nombre: 'Destornillador',
-      referencia: '',
-      descripcion: 'Destornillador de estrella',
-      sitioGuardado: 'Cajón pequeño',
-      prestadoActual: false,
-      prestamos: [],
-    },
-  ]);
+  constructor() {}
 
-  getObjetos() {
-    return this.objetos();
+  getObjetos(): Observable<Objeto[]> {
+    return this.http.get<Objeto[]>(`${this.apiUrl}/all`);
   }
   //metodo obtener solo disponibles
-  getDisponibles() {
-    return this.objetos().filter((o) => !o.prestadoActual);
+  getDisponibles(): Observable<Objeto[]> {
+    return this.http.get<Objeto[]>(`${this.apiUrl}/disponibles`);
   }
   //metodo obtener solo prestados
-  getPrestados() {
-    return this.objetos().filter((o) => o.prestadoActual);
+  getPrestados(): Observable<Objeto[]> {
+    return this.http.get<Objeto[]>(`${this.apiUrl}/prestados`);
   }
 
-  addObjeto(nombre: string, descripcion: string, sitioGuardado: string) {
-    this.objetos.update((lista) => [
-      ...lista,
-      {
-        id: this.nextId++,
-        nombre,
-        referencia: '',
-        descripcion,
-        sitioGuardado,
-        prestadoActual: false,
-        prestamos: [],
-      },
-    ]);
+  addObjeto(objeto: {
+    nombre: string;
+    descripcion: string;
+    sitioGuardado: string;
+  }): Observable<Objeto> {
+    return this.http.post<Objeto>(`${this.apiUrl}/add`, objeto);
   }
 
-  prestarObjeto(id: number, prestadoA: string, anotaciones: string) {
-    this.objetos.update((lista) =>
-      lista.map((objeto) => {
-        if (objeto.id === id && !objeto.prestadoActual) {
-          const nuevoPrestamo = {
-            id: this.nextPrestamoId++,
-            fechaInicio: new Date(),
-            fechaFin: null,
-            prestadoA,
-            anotaciones,
-          };
-          return {
-            ...objeto,
-            prestadoActual: true,
-            prestamos: [...objeto.prestamos, nuevoPrestamo],
-          };
-        }
-        return objeto;
-      }),
-    );
+  prestarObjeto(
+    nombre: string,
+    prestamoData: {
+      esDeAva: boolean;
+      entidadAjena: string;
+      inicioPrestamo: { anotaciones: string };
+    },
+  ): Observable<Objeto> {
+    return this.http.post<Objeto>(`${this.apiUrl}/prestar?nombre=${nombre}`, prestamoData);
   }
-  devolverObjeto(id: number, anotacionesDevolucion: string) {
-    this.objetos.update((lista) =>
-      lista.map((objeto) => {
-        if (objeto.id === id && objeto.prestadoActual) {
-          const prestamosActualizados = [...objeto.prestamos];
-          const ultimoPrestamo = prestamosActualizados[prestamosActualizados.length - 1];
-          if (ultimoPrestamo) {
-            ultimoPrestamo.fechaFin = new Date();
-            // Puedes guardar las anotaciones de devolución donde quieras
-          }
-          return {
-            ...objeto,
-            prestadoActual: false,
-            prestamos: prestamosActualizados,
-          };
-        }
-        return objeto;
-      }),
+
+  devolverObjeto(nombre: string, anotaciones: string): Observable<Objeto> {
+    return this.http.put<Objeto>(
+      `${this.apiUrl}/devolver?nombre=${nombre}&anotaciones=${anotaciones}`,
+      {},
     );
   }
 
-  eliminarObjeto(id: number) {
-    this.objetos.update((lista) => lista.filter((objeto) => objeto.id !== id));
+  eliminarObjeto(nombre: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete?nombre=${nombre}`);
   }
 }

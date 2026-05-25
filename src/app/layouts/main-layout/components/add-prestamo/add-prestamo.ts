@@ -86,8 +86,19 @@ export class AddPrestamo {
     if (this.errores.nombre || this.errores.descripcion || this.errores.sitioGuardado) {
       return;
     }
-    this.prestamoService.addObjeto(this.nombre, this.descripcion, this.sitioGuardado);
-    this.dialogRef.close(true);
+    const nuevoobjeto = {
+      nombre: this.nombre,
+      descripcion: this.descripcion,
+      sitioGuardado: this.sitioGuardado,
+    };
+    this.prestamoService.addObjeto(nuevoobjeto).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        console.error('Error al crear la Herramienta', err);
+      },
+    });
   }
 
   cancel() {

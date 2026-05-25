@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { PrestamoService, objeto } from '../../services/prestamo.service';
+import { PrestamoService, Objeto } from '../../services/prestamo.service';
 
 @Component({
   selector: 'app-prestar-devolver',
@@ -17,17 +17,17 @@ export class PrestarDevolverComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PrestarDevolverComponent>);
   private prestamoService = inject(PrestamoService);
 
-  disponibles: objeto[] = [];
-  prestados: objeto[] = [];
+  disponibles: Objeto[] = [];
+  prestados: Objeto[] = [];
 
-  herramientaSeleccionadaId: number | null = null;
+  herramientaSeleccionadaId: string | null = null;
   entidadAjena = '';
   anotacionesPrestamo = '';
 
   errorEntidadAjena = '';
   errorAnotacionesPrestamo = '';
 
-  herramientaDevueltaId: number | null = null;
+  herramientaDevueltaId: string | null = null;
   anotacionesDevolucion = '';
   errorAnotacionesDevolucion = '';
 
@@ -66,8 +66,14 @@ export class PrestarDevolverComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    this.disponibles = [...this.prestamoService.getDisponibles()];
-    this.prestados = [...this.prestamoService.getPrestados()];
+    this.prestamoService.getDisponibles().subscribe({
+      next: (data) => (this.disponibles = data),
+      error: (err) => console.error('Error al cargando disponibles:', err),
+    });
+    this.prestamoService.getPrestados().subscribe({
+      next: (data) => (this.prestados = data),
+      error: (err) => console.error('Error al cargando prestados:', err),
+    });
   }
 
   prestar(): void {
@@ -76,27 +82,50 @@ export class PrestarDevolverComponent implements OnInit {
 
     if (this.errorEntidadAjena || this.errorAnotacionesPrestamo) return;
     if (!this.herramientaSeleccionadaId) return;
-    this.prestamoService.prestarObjeto(
-      this.herramientaSeleccionadaId,
-      this.entidadAjena.trim(),
-      this.anotacionesPrestamo.trim(),
-    );
-    this.limpiarPrestamo();
-    this.cargarDatos();
-    this.dialogRef.close(true); // cierra el diálogo tras prestar
+
+    const herramienta = this.disponibles.find((h) => h.id === this.herramientaSeleccionadaId);
+    if (!herramienta) {
+      console.error('Herramienta seleccionada no encontrada');
+      return;
+    }
+
+    const prestamoData = {
+      esDeAva: true,
+      entidadAjena: this.entidadAjena.trim(),
+      inicioPrestamo: { anotaciones: this.anotacionesPrestamo.trim() },
+    };
+
+    this.prestamoService.prestarObjeto(herramienta.nombre, prestamoData).subscribe({
+      next: () => {
+        this.limpiarPrestamo();
+        this.cargarDatos();
+        this.dialogRef.close(true); // cierra el diálogo tras prestar
+      },
+      error: (err) => console.error('Error al prestar:', err),
+    });
   }
 
   devolver(): void {
     this.validarAnotacionesDevolucion();
     if (!this.herramientaDevueltaId || this.errorAnotacionesDevolucion) return;
     if (!this.herramientaDevueltaId) return;
-    this.prestamoService.devolverObjeto(
-      this.herramientaDevueltaId,
-      this.anotacionesDevolucion.trim(),
-    );
-    this.limpiarDevolucion();
-    this.cargarDatos();
-    this.dialogRef.close(true); // cierra el diálogo tras devolver
+
+    const herramienta = this.prestados.find((h) => h.id === this.herramientaDevueltaId);
+    if (!herramienta) {
+      console.error('Herramienta devuelta no encontrada');
+      return;
+    }
+
+    this.prestamoService
+      .devolverObjeto(herramienta.nombre, this.anotacionesDevolucion.trim())
+      .subscribe({
+        next: () => {
+          this.limpiarDevolucion();
+          this.cargarDatos();
+          this.dialogRef.close(true); // cierra el diálogo tras devolver
+        },
+        error: (err) => console.error('Error al devolver:', err),
+      });
   }
 
   limpiarPrestamo(): void {
