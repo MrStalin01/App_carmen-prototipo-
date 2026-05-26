@@ -9,11 +9,12 @@ import { AddMember } from './components/add-member/add-member';
 import { ModifyMember } from './components/modify-member/modify-member';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Member } from './components/member/member';
 import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
 import { RouterModule } from '@angular/router';
-import { SociosService } from '../../core/services/socios/socios.service';
+import { SocioService } from '../../core/services/socios/socios.service';
 import { ActividadService } from '../../core/services/actividad/actividad.service';
 
 interface Socio {
@@ -65,13 +66,13 @@ export class MainLayout implements OnInit {
   errorCarga: string | null = null;
 
   filtros = [
-    { label: 'Activo',   activo: false },
+    { label: 'Activo', activo: false },
     { label: 'Inactivo', activo: false },
     { label: 'Profesor', activo: false },
-    { label: 'A → Z',   activo: false },
-    { label: 'Z → A',   activo: false },
-    { label: '0 → 9',   activo: false },
-    { label: '9 → 0',   activo: false },
+    { label: 'A → Z', activo: false },
+    { label: 'Z → A', activo: false },
+    { label: '0 → 9', activo: false },
+    { label: '9 → 0', activo: false },
   ];
 
   socios: Socio[] = [];
@@ -115,18 +116,18 @@ export class MainLayout implements OnInit {
   }
 
   private mapToApiSocio(s: any): any {
- return {
-   informacionPersonalModel: {
-     nombres: s.nombres,
-     apellidos: s.apellidos,
-     correo: s.correo,
-     telefono: s.tel,
-     identificacion: s.dni,
-   },
-   estado_Socio: s.estado,
-   tipo_socio: s.profesor === 'Si' ? 'profesor' : 'socio',
- };
-}
+    return {
+      informacionPersonalModel: {
+        nombres: s.nombres,
+        apellidos: s.apellidos,
+        correo: s.correo,
+        telefono: s.tel,
+        identificacion: s.dni,
+      },
+      estado_Socio: s.estado,
+      tipo_socio: s.profesor === 'Si' ? 'profesor' : 'socio',
+    };
+  }
 
 
   private mapearSocio(s: any): Socio {
@@ -222,8 +223,13 @@ export class MainLayout implements OnInit {
     });
   }
 
-  toggleFiltros(): void { this.filtrosAbiertos = !this.filtrosAbiertos; }
-  toggleChip(filtro: any): void { filtro.activo = !filtro.activo; }
+  toggleFiltros(): void {
+    this.filtrosAbiertos = !this.filtrosAbiertos;
+  }
+
+  toggleChip(filtro: any): void {
+    filtro.activo = !filtro.activo;
+  }
 
   openAddMember(socio?: Socio): void {
     if (socio) {
@@ -260,8 +266,8 @@ export class MainLayout implements OnInit {
           },
           error: (err: any) => console.error('Error ADD socio:', err),
         });
-      });
-    }
+      }
+    });
   }
 
   openMember(): void {
