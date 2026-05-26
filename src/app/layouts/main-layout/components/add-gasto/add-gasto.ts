@@ -1,15 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { GastoIngresoService } from '../../services/gasto-ingreso.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NativeDateAdapter, MatNativeDateModule, DateAdapter } from '@angular/material/core';
 import { MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-add-gasto',
@@ -24,7 +22,6 @@ import { formatDate } from '@angular/common';
     MatDatepickerModule,
     MatNativeDateModule,
   ],
-
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
     { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -35,23 +32,17 @@ import { formatDate } from '@angular/common';
 })
 export class AddGastoComponent {
   private dialogRef = inject(MatDialogRef<AddGastoComponent>);
-  private gastoService = inject(GastoIngresoService);
 
-  monto: number | null = null;
-  descripcion = '';
-  fecha = '';
-  fechaDate: Date | null = null;
+  monto:       number | null = null;
+  descripcion  = '';
+  fechaDate:   Date | null = null;
 
-  errorMonto = '';
+  errorMonto       = '';
   errorDescripcion = '';
-  errorFecha = '';
+  errorFecha       = '';
 
   validarMonto(): boolean {
-    if (this.monto === null || this.monto === undefined) {
-      this.errorMonto = '';
-      return false;
-    }
-    if (this.monto <= 0) {
+    if (!this.monto || this.monto <= 0) {
       this.errorMonto = 'El monto debe ser mayor que 0';
       return false;
     }
@@ -60,10 +51,7 @@ export class AddGastoComponent {
   }
 
   validarDescripcion(): boolean {
-    if (!this.descripcion.trim()) {
-      this.errorDescripcion = 'La descripción es obligatoria';
-      return false;
-    } else if (this.descripcion.trim().length < 5) {
+    if (!this.descripcion.trim() || this.descripcion.trim().length < 5) {
       this.errorDescripcion = 'La descripción debe tener al menos 5 caracteres';
       return false;
     }
@@ -80,12 +68,6 @@ export class AddGastoComponent {
     return true;
   }
 
-  onFechaChange(event: any): void {
-    if (event.value) {
-      this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
-    }
-  }
-
   isFormValid(): boolean {
     return this.validarMonto() && this.validarDescripcion() && this.validarFecha();
   }
@@ -93,16 +75,18 @@ export class AddGastoComponent {
   confirm(): void {
     if (!this.isFormValid()) return;
 
-    this.gastoService.addGasto({
-      monto: this.monto!,
-      descripcion: this.descripcion.trim(),
-      fechaGasto: this.fecha,
-    });
+    // ✅ Formato yyyy-MM-dd que espera LocalDate en Spring Boot
+    const fecha_gasto = formatDate(this.fechaDate!, 'yyyy-MM-dd', 'en-US');
 
-    this.dialogRef.close(true);
+    // ✅ Cierra el dialog devolviendo los datos — quien llame se encarga del HTTP
+    this.dialogRef.close({
+      monto:       this.monto!,
+      descripcion: this.descripcion.trim(),
+      fecha_gasto,
+    });
   }
 
   cancel(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close(undefined);
   }
 }

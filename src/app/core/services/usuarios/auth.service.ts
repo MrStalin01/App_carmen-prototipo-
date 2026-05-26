@@ -11,7 +11,7 @@ export class AuthService {
   constructor(private http:HttpClient) {
   }
   guardar(datos:any):Observable<any>{
-    return this.http.post<any>(`${this.URL}/register/`, datos)
+    return this.http.post<any>(`${this.URL}/register`, datos)
   }
 
 }
