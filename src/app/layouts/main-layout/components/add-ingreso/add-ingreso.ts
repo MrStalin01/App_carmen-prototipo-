@@ -1,16 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { GastoIngresoService } from '../../services/gasto-ingreso.service';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NativeDateAdapter, MatNativeDateModule, DateAdapter } from '@angular/material/core';
 import { MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { formatDate } from '@angular/common';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-add-ingreso',
@@ -20,10 +17,10 @@ import { ChangeDetectorRef } from '@angular/core';
     FormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
@@ -35,48 +32,29 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class AddIngresoComponent {
   private dialogRef = inject(MatDialogRef<AddIngresoComponent>);
-  private ingresoService = inject(GastoIngresoService);
-  private cdr = inject(ChangeDetectorRef);
 
-  monto: number | null = null;
-  descripcion = '';
-  fecha = '';
-  fechaDate: Date | null = null;
+  monto:       number | null = null;
+  descripcion  = '';
+  fechaDate:   Date | null = null;
 
-  errorMonto = '';
+  errorMonto       = '';
   errorDescripcion = '';
-  errorFecha = '';
+  errorFecha       = '';
 
   validarMonto(): boolean {
-    if (this.monto === null || this.monto === undefined) {
-      this.errorMonto = 'El monto es obligatorio y debe ser numérico';
-      return false;
-    }
-    if (isNaN(this.monto)) {
-      this.errorMonto = 'El monto debe ser un número válido';
-      return false;
-    }
-    if (this.monto <= 0) {
+    if (!this.monto || isNaN(this.monto) || this.monto <= 0) {
       this.errorMonto = 'El monto debe ser mayor que 0';
       return false;
-    } else {
-      this.errorMonto = '';
-      return true;
     }
-    this.cdr.detectChanges();
+    this.errorMonto = '';
+    return true;
   }
 
   validarDescripcion(): boolean {
-    const desc = this.descripcion.trim();
-
-    if (!desc) {
-      this.errorDescripcion = 'La descripción es obligatoria';
-      return false;
-    } else if (desc.length < 5) {
+    if (!this.descripcion.trim() || this.descripcion.trim().length < 5) {
       this.errorDescripcion = 'Debe tener al menos 5 caracteres';
       return false;
     }
-
     this.errorDescripcion = '';
     return true;
   }
@@ -90,12 +68,6 @@ export class AddIngresoComponent {
     return true;
   }
 
-  onFechaChange(event: any): void {
-    if (event.value) {
-      this.fecha = formatDate(event.value, 'dd-MM-yyyy', 'en-US');
-    }
-  }
-
   isFormValid(): boolean {
     return this.validarMonto() && this.validarDescripcion() && this.validarFecha();
   }
@@ -103,16 +75,18 @@ export class AddIngresoComponent {
   confirm(): void {
     if (!this.isFormValid()) return;
 
-    this.ingresoService.addIngreso({
-      monto: this.monto!,
-      descripcion: this.descripcion.trim(),
-      fechaIngreso: this.fecha,
-    });
+    // ✅ Formato yyyy-MM-dd que espera LocalDate en Spring Boot
+    const fechaIngreso = formatDate(this.fechaDate!, 'yyyy-MM-dd', 'en-US');
 
-    this.dialogRef.close(true);
+    // ✅ Cierra el dialog devolviendo los datos
+    this.dialogRef.close({
+      monto:        this.monto!,
+      descripcion:  this.descripcion.trim(),
+      fechaIngreso,
+    });
   }
 
   cancel(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close(undefined);
   }
 }

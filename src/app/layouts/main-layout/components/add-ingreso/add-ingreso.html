@@ -32,7 +32,7 @@
         matInput
         [matDatepicker]="picker"
         [(ngModel)]="fechaDate"
-        (dateChange)="onFechaChange($event)"
+        (dateChange)="fechaDate = $event.value"
         (blur)="validarFecha()"
         placeholder="dd/mm/yyyy "
       />

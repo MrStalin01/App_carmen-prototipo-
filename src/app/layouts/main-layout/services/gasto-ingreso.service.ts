@@ -1,89 +1,64 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface Gasto {
-  id: number;
-  monto: number;
-  descripcion: string;
-  fechaGasto: string;
+  id?:          string;
+  monto:        number;
+  descripcion:  string;
+  fecha_gasto:  string; // "yyyy-MM-dd"
 }
 
 export interface Ingreso {
-  id: number;
-  monto: number;
-  descripcion: string;
-  fechaIngreso: string;
+  id?:          string;
+  monto:        number;
+  descripcion:  string;
+  fechaIngreso: string; // "yyyy-MM-dd"
 }
 
 @Injectable({ providedIn: 'root' })
 export class GastoIngresoService {
-  private nextIdGasto = 1;
-  private nextIdIngreso = 1;
 
-  // Datos mock de gastos
-  private gastosSignal = signal<Gasto[]>([
-    {
-      id: this.nextIdGasto++,
-      monto: 50.0,
-      descripcion: 'construccion de escalera comunidad',
-      fechaGasto: '17-04-2026',
-    },
-    {
-      id: this.nextIdGasto++,
-      monto: 105.0,
-      descripcion: 'Compra de herramientas',
-      fechaGasto: '10-04-2026',
-    },
-  ]);
+  private URL = environment.apiURL;
 
-  // Datos mock de ingresos
-  private ingresosSignal = signal<Ingreso[]>([
-    {
-      id: this.nextIdIngreso++,
-      monto: 500.0,
-      descripcion: 'Suscripción trimestral',
-      fechaIngreso: '01-04-2026',
-    },
-    { id: this.nextIdIngreso++, monto: 200.0, descripcion: 'Donación', fechaIngreso: '15-04-2026' },
-  ]);
+  constructor(private http: HttpClient) {}
 
-  // Getters
-  getGastos(): Gasto[] {
-    return this.gastosSignal();
+  // ── GASTOS ────────────────────────────────────────────────────
+
+  getGastos(): Observable<Gasto[]> {
+    return this.http.get<Gasto[]>(`${this.URL}/gastos/all`);
   }
 
-  getIngresos(): Ingreso[] {
-    return this.ingresosSignal();
+  addGasto(gasto: Omit<Gasto, 'id'>): Observable<Gasto> {
+    return this.http.post<Gasto>(`${this.URL}/gastos/add`, gasto);
   }
 
-  getTotalGastos(): number {
-    return this.gastosSignal().reduce((total, g) => total + g.monto, 0);
+  deleteGasto(id: string): Observable<void> {
+    const params = new HttpParams().set('id', id);
+    return this.http.delete<void>(`${this.URL}/gastos/delete`, { params });
   }
 
-  getTotalIngresos(): number {
-    return this.ingresosSignal().reduce((total, i) => total + i.monto, 0);
+  getTotalGastos(): Observable<number> {
+    return this.http.get<number>(`${this.URL}/gastos/total`);
   }
 
-  getBalance(): number {
-    return this.getTotalIngresos() - this.getTotalGastos();
+  // ── INGRESOS ──────────────────────────────────────────────────
+
+  getIngresos(): Observable<Ingreso[]> {
+    return this.http.get<Ingreso[]>(`${this.URL}/ingresos/all`);
   }
 
-  // Añadir gasto
-  addGasto(gasto: Omit<Gasto, 'id'>): void {
-    this.gastosSignal.update((lista) => [...lista, { id: this.nextIdGasto++, ...gasto }]);
+  addIngreso(ingreso: Omit<Ingreso, 'id'>): Observable<Ingreso> {
+    return this.http.post<Ingreso>(`${this.URL}/ingresos/add`, ingreso);
   }
 
-  // Añadir ingreso
-  addIngreso(ingreso: Omit<Ingreso, 'id'>): void {
-    this.ingresosSignal.update((lista) => [...lista, { id: this.nextIdIngreso++, ...ingreso }]);
+  deleteIngreso(id: string): Observable<void> {
+    const params = new HttpParams().set('id', id);
+    return this.http.delete<void>(`${this.URL}/ingresos/delete`, { params });
   }
 
-  // Eliminar gasto
-  deleteGasto(id: number): void {
-    this.gastosSignal.update((lista) => lista.filter((g) => g.id !== id));
-  }
-
-  // Eliminar ingreso
-  deleteIngreso(id: number): void {
-    this.ingresosSignal.update((lista) => lista.filter((i) => i.id !== id));
+  getTotalIngresos(): Observable<number> {
+    return this.http.get<number>(`${this.URL}/ingresos/total`);
   }
 }

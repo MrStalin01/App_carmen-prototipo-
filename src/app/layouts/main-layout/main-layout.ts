@@ -9,12 +9,11 @@ import { AddMember } from './components/add-member/add-member';
 import { ModifyMember } from './components/modify-member/modify-member';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Member } from './components/member/member';
 import { DeleteMember } from './components/delete-member/delete-member';
 import { AddCurso } from './components/add-curso/add-curso';
 import { CursosMember } from './components/cursos-member/cursos-member';
 import { RouterModule } from '@angular/router';
-import { SocioService } from '../../core/services/socios/socios.service';
+import { SociosService } from '../../core/services/socios/socios.service';
 import { ActividadService } from '../../core/services/actividad/actividad.service';
 
 interface Socio {
@@ -51,7 +50,7 @@ interface Socio {
 export class MainLayout implements OnInit {
   private dialog          = inject(MatDialog);
   private router          = inject(Router);
-  private socioService    = inject(SociosService);
+  private sociosService    = inject(SociosService);
   private actividadService = inject(ActividadService);
 
   filtrosAbiertos = false;
@@ -89,7 +88,7 @@ export class MainLayout implements OnInit {
     this.cargando = true;
     this.errorCarga = null;
 
-    this.socioService.getSocios().subscribe({
+    this.sociosService.getSocios().subscribe({
       next: (data: any[]) => {
         this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
         this.cargando = false;
@@ -116,18 +115,20 @@ export class MainLayout implements OnInit {
   }
 
   private mapToApiSocio(s: any): any {
-    return {
-      informacionPersonalModel: {
-        nombres: s.nombres,
-        apellidos: s.apellidos,
-        correo: s.correo,
-        telefono: s.tel,
-        identificacion: s.dni,
-      },
-      estado_Socio: s.estado,
-      tipo_socio: s.profesor === 'Si' ? 'profesor' : 'socio',
-    };
-  }
+  return {
+    informacionPersonalModel: {
+      nombres:        s.nombres,
+      apellidos:      s.apellidos,
+      correo:         s.correo,
+      telefono:       s.tel,
+      identificacion: s.dni,
+    },
+    tipo_socio:        s.profesor === 'Si' ? ['PROFESOR'] : ['REGULAR'],
+    cuotas:            s.cuotas ?? [],
+    fecha_vencimiento: s.fechaVenc ?? '',
+    actividades:       s.actividades ?? {},
+  };
+}
 
 
   private mapearSocio(s: any): Socio {
@@ -147,7 +148,7 @@ export class MainLayout implements OnInit {
       dni:           info.identificacion ?? '',
       estado:        s.estado_Socio      ?? 'Inactivo',
       fechaVenc:     s.fecha_vencimiento ?? '',
-      profesor:      s.tipo_socio?.toLowerCase() === 'profesor' ? 'Si' : 'No',
+      profesor: (Array.isArray(s.tipo_socio) ? s.tipo_socio : []).some((t: string) => t?.toLowerCase() === 'profesor') ? 'Si' : 'No',
       cursos,
       cursosAbiertos: false,
       selected:       false,
@@ -239,7 +240,7 @@ export class MainLayout implements OnInit {
       });
       dialogRef.afterClosed().subscribe((result: any) => {
         if (!result) return;
-        this.socioService.update(socio.id, this.mapToApiSocio(result)).subscribe({
+        this.sociosService.update({ id: socio.id, ...this.mapToApiSocio(result) }).subscribe({
           next: () => {
             const index = this.socios.indexOf(socio);
             if (index !== -1) this.socios[index] = { ...socio, ...result };
@@ -254,7 +255,7 @@ export class MainLayout implements OnInit {
       });
       dialogRef.afterClosed().subscribe((result: any) => {
         if (!result) return;
-        this.socioService.guardar(this.mapToApiSocio(result)).subscribe({
+        this.sociosService.guardar(this.mapToApiSocio(result)).subscribe({
           next: (nuevo: any) => {
             this.socios.push({
               ...result,
@@ -266,18 +267,18 @@ export class MainLayout implements OnInit {
           },
           error: (err: any) => console.error('Error ADD socio:', err),
         });
-      }
-    });
+      });
+    }
   }
 
   openMember(): void {
     const nextNumero = this.socios.length + 1;
-    const dialogRef = this.dialog.open(ModifyMember, {
+    const dialogRef = this.dialog.open(AddMember, {
       data: { nextNumero },
     });
     dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
-      this.socioService.guardar(this.mapToApiSocio(result)).subscribe({
+      this.sociosService.guardar(this.mapToApiSocio(result)).subscribe({
         next: (nuevo: any) => {
           this.socios.push({
             ...result,
@@ -303,7 +304,7 @@ export class MainLayout implements OnInit {
 
       if (socio) {
         // ── Eliminar un socio concreto ──────────────────────────
-        this.socioService.deleteSocio(socio.id).subscribe({
+        this.sociosService.deleteSocio(socio.id).subscribe({
           next: () => {
             this.socios = this.socios.filter((s) => s !== socio);
           },
@@ -315,7 +316,7 @@ export class MainLayout implements OnInit {
         let completados = 0;
 
         seleccionados.forEach((s) => {
-          this.socioService.deleteSocio(s.id).subscribe({
+          this.sociosService.deleteSocio(s.id).subscribe({
             next: () => {
               completados++;
               // Refrescamos la lista solo cuando todas las peticiones terminen
