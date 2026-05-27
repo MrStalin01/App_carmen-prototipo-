@@ -7,14 +7,14 @@ export interface Gasto {
   id?:          string;
   monto:        number;
   descripcion:  string;
-  fecha_gasto:  string; // "yyyy-MM-dd"
+  fecha_gasto:  string;
 }
 
 export interface Ingreso {
   id?:          string;
   monto:        number;
   descripcion:  string;
-  fechaIngreso: string; // "yyyy-MM-dd"
+  fechaIngreso: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,7 +24,7 @@ export class GastoIngresoService {
 
   constructor(private http: HttpClient) {}
 
-  // ── GASTOS ────────────────────────────────────────────────────
+
 
   getGastos(): Observable<Gasto[]> {
     return this.http.get<Gasto[]>(`${this.URL}/gastos/all`);
@@ -43,7 +43,7 @@ export class GastoIngresoService {
     return this.http.get<number>(`${this.URL}/gastos/total`);
   }
 
-  // ── INGRESOS ──────────────────────────────────────────────────
+
 
   getIngresos(): Observable<Ingreso[]> {
     return this.http.get<Ingreso[]>(`${this.URL}/ingresos/all`);

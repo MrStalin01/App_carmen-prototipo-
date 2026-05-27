@@ -43,11 +43,11 @@ export class PrestamoService {
   getObjetos() {
     return this.objetos();
   }
-  //metodo obtener solo disponibles
+
   getDisponibles() {
     return this.objetos().filter((o) => !o.prestadoActual);
   }
-  //metodo obtener solo prestados
+
   getPrestados() {
     return this.objetos().filter((o) => o.prestadoActual);
   }

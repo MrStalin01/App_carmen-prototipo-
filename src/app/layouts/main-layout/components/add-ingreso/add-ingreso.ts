@@ -75,10 +75,10 @@ export class AddIngresoComponent {
   confirm(): void {
     if (!this.isFormValid()) return;
 
-    // ✅ Formato yyyy-MM-dd que espera LocalDate en Spring Boot
+
     const fechaIngreso = formatDate(this.fechaDate!, 'yyyy-MM-dd', 'en-US');
 
-    // ✅ Cierra el dialog devolviendo los datos
+
     this.dialogRef.close({
       monto:        this.monto!,
       descripcion:  this.descripcion.trim(),

@@ -155,7 +155,7 @@ export class MainLayout implements OnInit {
     };
   }
 
-  // ── Filtros y ordenación (sin cambios) ─────────────────────────
+
   get sociosFiltrados(): Socio[] {
     let lista = this.socios;
 
@@ -303,7 +303,7 @@ export class MainLayout implements OnInit {
       if (!confirmed) return;
 
       if (socio) {
-        // ── Eliminar un socio concreto ──────────────────────────
+
         this.sociosService.deleteSocio(socio.id).subscribe({
           next: () => {
             this.socios = this.socios.filter((s) => s !== socio);
@@ -311,7 +311,7 @@ export class MainLayout implements OnInit {
           error: (err: any) => console.error('Error DELETE socio:', err),
         });
       } else {
-        // ── Eliminar todos los seleccionados ────────────────────
+
         const seleccionados = this.socios.filter((s) => s.selected);
         let completados = 0;
 
@@ -319,7 +319,7 @@ export class MainLayout implements OnInit {
           this.sociosService.deleteSocio(s.id).subscribe({
             next: () => {
               completados++;
-              // Refrescamos la lista solo cuando todas las peticiones terminen
+
               if (completados === seleccionados.length) {
                 this.socios = this.socios.filter((x) => !x.selected);
               }

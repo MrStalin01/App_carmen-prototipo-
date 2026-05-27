@@ -75,10 +75,9 @@ export class AddGastoComponent {
   confirm(): void {
     if (!this.isFormValid()) return;
 
-    // ✅ Formato yyyy-MM-dd que espera LocalDate en Spring Boot
     const fecha_gasto = formatDate(this.fechaDate!, 'yyyy-MM-dd', 'en-US');
 
-    // ✅ Cierra el dialog devolviendo los datos — quien llame se encarga del HTTP
+
     this.dialogRef.close({
       monto:       this.monto!,
       descripcion: this.descripcion.trim(),
