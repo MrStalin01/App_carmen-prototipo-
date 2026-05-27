@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -52,6 +52,7 @@ export class MainLayout implements OnInit {
   private router          = inject(Router);
   private sociosService    = inject(SociosService);
   private actividadService = inject(ActividadService);
+  private cdr             = inject(ChangeDetectorRef);
 
   filtrosAbiertos = false;
   sortColumn: 'nombres' | 'apellidos' | null = null;
@@ -92,11 +93,13 @@ export class MainLayout implements OnInit {
       next: (data: any[]) => {
         this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Error GET /socio/all:', err);
         this.errorCarga = 'No se pudo cargar la lista de socios.';
         this.cargando = false;
+        this.cdr.detectChanges();
       },
     });
   }
