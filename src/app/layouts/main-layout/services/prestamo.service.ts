@@ -2,12 +2,18 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface PrestamoRegistro {
-  id: number;
-  fechaInicio: Date;
-  fechaFin: Date | null;
-  prestadoA: string;
+export interface InicioFinPrestamo {
+  fecha: Date;
   anotaciones: string;
+  estadoObjeto: string | null;
+}
+export interface Prestamo {
+  id: string;
+  esDeAva: boolean;
+  entidadAjena: string;
+  inicioPrestamo: InicioFinPrestamo;
+  finPrestamo: InicioFinPrestamo | null;
+  active: boolean;
 }
 
 export interface Objeto {
@@ -17,7 +23,7 @@ export interface Objeto {
   descripcion: string;
   sitioGuardado: string;
   prestadoActual: boolean;
-  prestamos: PrestamoRegistro[];
+  prestamos: Prestamo[];
 }
 
 @Injectable({ providedIn: 'root' })

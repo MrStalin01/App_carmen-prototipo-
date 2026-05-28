@@ -5,6 +5,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PrestamoService, Objeto } from '../../services/prestamo.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-prestar-devolver',
@@ -16,6 +17,7 @@ import { PrestamoService, Objeto } from '../../services/prestamo.service';
 export class PrestarDevolverComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PrestarDevolverComponent>);
   private prestamoService = inject(PrestamoService);
+  private cdr = inject(ChangeDetectorRef);
 
   disponibles: Objeto[] = [];
   prestados: Objeto[] = [];
@@ -67,11 +69,17 @@ export class PrestarDevolverComponent implements OnInit {
 
   cargarDatos(): void {
     this.prestamoService.getDisponibles().subscribe({
-      next: (data) => (this.disponibles = data),
+      next: (data) => {
+        this.disponibles = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error al cargando disponibles:', err),
     });
     this.prestamoService.getPrestados().subscribe({
-      next: (data) => (this.prestados = data),
+      next: (data) => {
+        this.prestados = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error al cargando prestados:', err),
     });
   }

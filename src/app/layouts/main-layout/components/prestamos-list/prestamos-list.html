@@ -65,7 +65,10 @@
                 <ng-container
                   *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosTodas"
                 >
-                  {{ item.prestamos[item.prestamos.length - 1].fechaInicio | date: 'dd/MM/yyyy' }}
+                  {{
+                    item.prestamos[item.prestamos.length - 1].inicioPrestamo.fecha
+                      | date: 'dd/MM/yyyy'
+                  }}
                 </ng-container>
                 <ng-template #sinPrestamosTodas>
                   <span class="text-muted">Nunca</span>
@@ -111,7 +114,10 @@
                 <ng-container
                   *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosPrestadas"
                 >
-                  {{ item.prestamos[item.prestamos.length - 1].fechaInicio | date: 'dd/MM/yyyy' }}
+                  {{
+                    item.prestamos[item.prestamos.length - 1].inicioPrestamo.fecha
+                      | date: 'dd/MM/yyyy'
+                  }}
                 </ng-container>
                 <ng-template #sinPrestamosPrestadas>
                   <span class="text-muted">Nunca</span>
@@ -157,7 +163,10 @@
                 <ng-container
                   *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosDisponibles"
                 >
-                  {{ item.prestamos[item.prestamos.length - 1].fechaInicio | date: 'dd/MM/yyyy' }}
+                  {{
+                    item.prestamos[item.prestamos.length - 1].inicioPrestamo.fecha
+                      | date: 'dd/MM/yyyy'
+                  }}
                 </ng-container>
                 <ng-template #sinPrestamosDisponibles>
                   <span class="text-muted">Nunca</span>
