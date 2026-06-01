@@ -53,6 +53,21 @@
     </div>
   </div>
 
+  @if (cargando) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando Ingresos...</p>
+  </div>
+  }
+
+
+  @if (errorCarga) {
+  <div class="error-state">
+    <p>{{ errorCarga }}</p>
+    <button (click)="cargarIngresos()">Reintentar</button>
+  </div>
+  }
+  @if (!cargando && !errorCarga) {
   <div class="container mt-3">
     <table class="table">
       <thead>
@@ -89,5 +104,6 @@
       </tbody>
     </table>
   </div>
+  }
 
 </section>

@@ -31,7 +31,6 @@
     </button>
   </div>
 
-
   <div class="gastos-container">
 
     <div class="gastos-toolbar">
@@ -63,8 +62,22 @@
         }
       </div>
     </div>
+    @if (cargando) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando gastos...</p>
+    </div>
+    }
 
-    <!-- Tabla -->
+
+    @if (errorCarga) {
+    <div class="error-state">
+      <p>{{ errorCarga }}</p>
+      <button (click)="cargarGastos()">Reintentar</button>
+    </div>
+    }
+
+    @if (!cargando && !errorCarga) {
     <div class="tabla-wrapper">
       <table mat-table [dataSource]="gastosFiltrados()">
 
@@ -100,6 +113,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
     </div>
-
+    }
   </div>
 </section>

@@ -26,6 +26,7 @@ export class SociosService {
   }
 
   update(socio: any): Observable<any> {
-    return this.http.patch<any>(`${this.URL}/socio/update`, socio);
+    const { id, ...body } = socio;
+  return this.http.patch<any>(`${this.URL}/socio/update?id=${id}`, body);
   }
 }

@@ -62,7 +62,7 @@ export class MainLayout implements OnInit {
   textoBusqueda = '';
 
 
-  cargando = false;
+  cargando = true;
   errorCarga: string | null = null;
 
   filtros = [
@@ -135,23 +135,24 @@ export class MainLayout implements OnInit {
 
 
   private mapearSocio(s: any): Socio {
-    const info = s.informacionPersonalModel ?? {};
+    const info = s.informacion_personal ?? {};
 
 
     const cursos: string[] = Object.values(s.actividades ?? {}).flatMap(
-      (a: any) => (a.cursos ?? []).map((c: any) => c.nombreCurso ?? c.id ?? '')
+    (a: any) => (a.cursos ?? []).map((c: any) => c.nombreCurso ?? c.id ?? '')
     );
 
     return {
-      id:            s.id               ?? s._id       ?? '',
-      nombres:       info.nombres        ?? '',
-      apellidos:     info.apellidos      ?? '',
-      correo:        info.correo         ?? '',
-      tel:           info.telefono       ?? '',
-      dni:           info.identificacion ?? '',
-      estado:        s.estado_Socio      ?? 'Inactivo',
-      fechaVenc:     s.fecha_vencimiento ?? '',
-      profesor: (Array.isArray(s.tipo_socio) ? s.tipo_socio : []).some((t: string) => t?.toLowerCase() === 'profesor') ? 'Si' : 'No',
+      id:        s.id               ?? s._id ?? '',
+      nombres:   info.nombres        ?? '',
+      apellidos: info.apellidos      ?? '',
+      correo:    info.correo         ?? '',
+      tel:       info.telefono       ?? '',
+      dni:       info.identificacion ?? '',
+      estado:    s.es_activo ? 'Activo' : 'Inactivo',
+      fechaVenc: s.fecha_vencimiento ?? '',
+      profesor:  (Array.isArray(s.tipo_socio) ? s.tipo_socio : [])
+                   .some((t: string) => t?.toLowerCase() === 'profesor') ? 'Si' : 'No',
       cursos,
       cursosAbiertos: false,
       selected:       false,
