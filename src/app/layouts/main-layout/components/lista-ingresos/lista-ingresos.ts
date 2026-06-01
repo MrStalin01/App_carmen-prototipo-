@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectorRef  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -34,10 +34,13 @@ export class ListaIngresosComponent implements OnInit {
   private dialog         = inject(MatDialog);
   private confirmDialog  = inject(ConfirmDialogService);
   private router         = inject(Router);
+  private cdr             = inject(ChangeDetectorRef);
 
   ingresos   = signal<Ingreso[]>([]);
   searchTerm = signal('');
-  cargando   = signal(false);
+  cargando   = false;
+  errorCarga: string | null = null;
+
   fabAbierto = false;
 
   displayedColumns: string[] = ['fecha', 'descripcion', 'monto', 'acciones'];
@@ -55,10 +58,22 @@ export class ListaIngresosComponent implements OnInit {
   }
 
   cargarIngresos(): void {
-    this.cargando.set(true);
+    this.cargando = true;
+    this.errorCarga = null;
+
     this.ingresoService.getIngresos().subscribe({
-      next: (data) => { this.ingresos.set(data); this.cargando.set(false); },
-      error: (err)  => { console.error('Error cargando ingresos:', err); this.cargando.set(false); },
+      next: (data) => {
+        console.log('Ingreso raw:', JSON.stringify(data[0]));
+        this.ingresos.set(data);
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error GET /ingresos/all:', err);
+        this.errorCarga = 'No se pudo cargar la lista de ingresos.';
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -69,6 +84,7 @@ export class ListaIngresosComponent implements OnInit {
       this.ingresoService.addIngreso(result).subscribe({
         next: (nuevo) => this.ingresos.update(lista => [...lista, nuevo]),
         error: (err)  => console.error('Error añadiendo ingreso:', err),
+
       });
     });
   }

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -35,10 +35,12 @@ export class ListaGastosComponent implements OnInit {
   private dialog        = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
   private router        = inject(Router);
+  private cdr           = inject(ChangeDetectorRef);
 
   gastos     = signal<Gasto[]>([]);
   searchTerm = signal('');
-  cargando   = signal(false);
+  cargando   = false;
+  errorCarga: string | null = null;
   fabAbierto = false;
 
   displayedColumns: string[] = ['fecha', 'descripcion', 'monto', 'acciones'];
@@ -56,12 +58,23 @@ export class ListaGastosComponent implements OnInit {
   }
 
   cargarGastos(): void {
-    this.cargando.set(true);
-    this.gastoService.getGastos().subscribe({
-      next: (data) => { this.gastos.set(data); this.cargando.set(false); },
-      error: (err)  => { console.error('Error cargando gastos:', err); this.cargando.set(false); },
-    });
-  }
+  this.cargando = true;
+  this.errorCarga = null;
+
+  this.gastoService.getGastos().subscribe({
+    next: (data) => {
+      this.gastos.set(data);
+      this.cargando = false;
+      this.cdr.detectChanges();
+    },
+    error: (err: any) => {
+      console.error('Error GET /gastos/all:', err);
+      this.errorCarga = 'No se pudo cargar la lista de gastos.';
+      this.cargando = false;
+      this.cdr.detectChanges();
+    },
+  });
+}
 
   abrirAddGasto(): void {
     const dialogRef = this.dialog.open(AddGastoComponent, { width: '450px' });
