@@ -1,11 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PrestamoService, Objeto } from '../../services/prestamo.service';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-prestar-devolver',
@@ -17,7 +16,9 @@ import { ChangeDetectorRef } from '@angular/core';
 export class PrestarDevolverComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PrestarDevolverComponent>);
   private prestamoService = inject(PrestamoService);
-  private cdr = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef); 
+
+  
 
   disponibles: Objeto[] = [];
   prestados: Objeto[] = [];
@@ -65,7 +66,7 @@ export class PrestarDevolverComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
-  }
+}
 
   cargarDatos(): void {
     this.prestamoService.getDisponibles().subscribe({
@@ -100,14 +101,13 @@ export class PrestarDevolverComponent implements OnInit {
     const prestamoData = {
       esDeAva: true,
       entidadAjena: this.entidadAjena.trim(),
-      inicioPrestamo: { anotaciones: this.anotacionesPrestamo.trim() },
+      anotaciones: this.anotacionesPrestamo.trim()
     };
 
     this.prestamoService.prestarObjeto(herramienta.nombre, prestamoData).subscribe({
       next: () => {
         this.limpiarPrestamo();
-        this.cargarDatos();
-        this.dialogRef.close(true); // cierra el diálogo tras prestar
+        this.dialogRef.close(true);
       },
       error: (err) => console.error('Error al prestar:', err),
     });
@@ -116,7 +116,6 @@ export class PrestarDevolverComponent implements OnInit {
   devolver(): void {
     this.validarAnotacionesDevolucion();
     if (!this.herramientaDevueltaId || this.errorAnotacionesDevolucion) return;
-    if (!this.herramientaDevueltaId) return;
 
     const herramienta = this.prestados.find((h) => h.id === this.herramientaDevueltaId);
     if (!herramienta) {
@@ -128,9 +127,8 @@ export class PrestarDevolverComponent implements OnInit {
       .devolverObjeto(herramienta.nombre, this.anotacionesDevolucion.trim())
       .subscribe({
         next: () => {
-          this.limpiarDevolucion();
-          this.cargarDatos();
-          this.dialogRef.close(true); // cierra el diálogo tras devolver
+        this.limpiarDevolucion();
+        this.dialogRef.close(true);
         },
         error: (err) => console.error('Error al devolver:', err),
       });

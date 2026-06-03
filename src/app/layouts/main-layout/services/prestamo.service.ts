@@ -29,7 +29,7 @@ export interface Objeto {
 @Injectable({ providedIn: 'root' })
 export class PrestamoService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8081/api/v1/objeto';
+  private apiUrl = 'http://localhost:8080/api/v1/objeto';
 
   constructor() {}
 
@@ -58,7 +58,7 @@ export class PrestamoService {
     prestamoData: {
       esDeAva: boolean;
       entidadAjena: string;
-      inicioPrestamo: { anotaciones: string };
+      anotaciones: string;
     },
   ): Observable<Objeto> {
     return this.http.post<Objeto>(`${this.apiUrl}/prestar?nombre=${nombre}`, prestamoData);

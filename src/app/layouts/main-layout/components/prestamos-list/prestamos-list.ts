@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,6 +35,8 @@ export class PrestamosListComponent implements OnInit {
   private prestamoService = inject(PrestamoService);
   private dialog = inject(MatDialog);
   private confirmDialog = inject(ConfirmDialogService);
+  private cdr = inject(ChangeDetectorRef); 
+
 
   todas = signal<Objeto[]>([]);
   prestadas = signal<Objeto[]>([]);
@@ -67,6 +69,7 @@ export class PrestamosListComponent implements OnInit {
         this.todas.set(data);
         this.prestadas.set(data.filter((o) => o.prestadoActual));
         this.disponibles.set(data.filter((o) => !o.prestadoActual));
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar objetos', err),
     });
@@ -79,7 +82,9 @@ export class PrestamosListComponent implements OnInit {
   abrirAddPrestamo(): void {
     const dialogRef = this.dialog.open(AddPrestamo, { width: '500px' });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.cargarDatos();
+      if (result){
+        setTimeout(() => this.cargarDatos());
+      }
     });
   }
 
@@ -87,7 +92,7 @@ export class PrestamosListComponent implements OnInit {
     const dialogRef = this.dialog.open(PrestarDevolverComponent, { width: '600px' });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.cargarDatos();
+        setTimeout(() => this.cargarDatos());
       }
     });
   }

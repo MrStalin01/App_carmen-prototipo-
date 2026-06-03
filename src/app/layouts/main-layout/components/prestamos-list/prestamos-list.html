@@ -66,7 +66,7 @@
                   *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosTodas"
                 >
                   {{
-                    item.prestamos[item.prestamos.length - 1].inicioPrestamo.fecha
+                    item.prestamos[item.prestamos.length - 1]?.inicioPrestamo?.fecha
                       | date: 'dd/MM/yyyy'
                   }}
                 </ng-container>
@@ -115,7 +115,7 @@
                   *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosPrestadas"
                 >
                   {{
-                    item.prestamos[item.prestamos.length - 1].inicioPrestamo.fecha
+                    item.prestamos[item.prestamos.length - 1]?.inicioPrestamo?.fecha
                       | date: 'dd/MM/yyyy'
                   }}
                 </ng-container>
@@ -164,7 +164,7 @@
                   *ngIf="item.prestamos && item.prestamos.length > 0; else sinPrestamosDisponibles"
                 >
                   {{
-                    item.prestamos[item.prestamos.length - 1].inicioPrestamo.fecha
+                    item.prestamos[item.prestamos.length - 1]?.inicioPrestamo?.fecha
                       | date: 'dd/MM/yyyy'
                   }}
                 </ng-container>

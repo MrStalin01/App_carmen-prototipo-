@@ -8,7 +8,7 @@
         <div class="campo">
           <label>Herramienta</label>
           <select [(ngModel)]="herramientaSeleccionadaId">
-            <option [value]="null">-- Selecciona --</option>
+            <option [ngValue]="null">-- Selecciona --</option>
             <option *ngFor="let tool of disponibles" [ngValue]="tool.id">
               {{ tool.nombre }} - {{ tool.descripcion }}
             </option>
@@ -60,7 +60,7 @@
         <div class="campo">
           <label>Herramienta</label>
           <select [(ngModel)]="herramientaDevueltaId">
-            <option [value]="null">-- Selecciona --</option>
+            <option [ngValue]="null">-- Selecciona --</option>
             <option *ngFor="let tool of prestados" [ngValue]="tool.id">
               {{ tool.nombre }} - {{ tool.descripcion }}
             </option>
