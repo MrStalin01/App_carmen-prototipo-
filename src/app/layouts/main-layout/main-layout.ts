@@ -91,9 +91,12 @@ export class MainLayout implements OnInit {
 
     this.sociosService.getSocios().subscribe({
       next: (data: any[]) => {
+        console.log('RAW socio[6]:', JSON.stringify(data[6], null, 2));
+        this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
         this.socios = (data ?? []).map((s: any) => this.mapearSocio(s));
         this.cargando = false;
         this.cdr.detectChanges();
+
       },
       error: (err: any) => {
         console.error('Error GET /socio/all:', err);
@@ -118,20 +121,20 @@ export class MainLayout implements OnInit {
   }
 
   private mapToApiSocio(s: any): any {
-  return {
-    informacionPersonalModel: {
-      nombres:        s.nombres,
-      apellidos:      s.apellidos,
-      correo:         s.correo,
-      telefono:       s.tel,
-      identificacion: s.dni,
-    },
-    tipo_socio:        s.profesor === 'Si' ? ['PROFESOR'] : ['REGULAR'],
-    cuotas:            s.cuotas ?? [],
-    fecha_vencimiento: s.fechaVenc ?? '',
-    actividades:       s.actividades ?? {},
-  };
-}
+    return {
+      informacion_personal: {
+        nombres:        s.nombres,
+        apellidos:      s.apellidos,
+        correo:         s.correo,
+        telefono:       s.tel,
+        identificacion: s.dni,
+      },
+      tipo_socio:        s.profesor === 'Si' ? ['PROFESOR'] : ['REGULAR'],
+      cuotas:            s.cuotas ?? [],
+      fecha_vencimiento: s.fechaVenc ?? '',
+      actividades:       s.actividades ?? {},
+    };
+  }
 
 
   private mapearSocio(s: any): Socio {
