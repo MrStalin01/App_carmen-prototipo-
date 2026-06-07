@@ -128,6 +128,8 @@ export class MainLayout implements OnInit {
         correo:         s.correo,
         telefono:       s.tel,
         identificacion: s.dni,
+        contrasena:     null,
+        numero_fiscal:  null,
       },
       tipo_socio:        s.profesor === 'Si' ? ['PROFESOR'] : ['REGULAR'],
       cuotas:            s.cuotas ?? [],
