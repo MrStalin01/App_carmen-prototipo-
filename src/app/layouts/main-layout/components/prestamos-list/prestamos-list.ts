@@ -114,4 +114,11 @@ export class PrestamosListComponent implements OnInit {
         }
       });
   }
+
+  // Devuelve el nombre de la persona/entidad a la que se prestó la herramienta
+  getPrestadoA(objeto: Objeto): string {
+    // Buscar el préstamo activo (sin fecha de fin)
+    const prestamoActivo = objeto.prestamos?.find(p => !p.finPrestamo);
+    return prestamoActivo?.entidadAjena || 'No disponible';
+  }
 }
