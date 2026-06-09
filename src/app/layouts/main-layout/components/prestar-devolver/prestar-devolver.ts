@@ -23,14 +23,14 @@ export class PrestarDevolverComponent implements OnInit {
   disponibles: Objeto[] = [];
   prestados: Objeto[] = [];
 
-  herramientaSeleccionadaId: string | null = null;
+  herramientaSeleccionadaId: string | undefined = undefined;
   entidadAjena = '';
   anotacionesPrestamo = '';
 
   errorEntidadAjena = '';
   errorAnotacionesPrestamo = '';
 
-  herramientaDevueltaId: string | null = null;
+  herramientaDevueltaId: string | undefined = undefined;
   anotacionesDevolucion = '';
   errorAnotacionesDevolucion = '';
 
@@ -68,22 +68,27 @@ export class PrestarDevolverComponent implements OnInit {
     this.cargarDatos();
 }
 
-  cargarDatos(): void {
-    this.prestamoService.getDisponibles().subscribe({
-      next: (data) => {
+ cargarDatos(): void {
+  this.prestamoService.getDisponibles().subscribe({
+    next: (data) => {
+      setTimeout(() => {
         this.disponibles = data;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error al cargando disponibles:', err),
-    });
-    this.prestamoService.getPrestados().subscribe({
-      next: (data) => {
+        this.cdr.detectChanges(); 
+      });
+    },
+    error: (err) => console.error('Error al cargando disponibles:', err),
+  });
+  
+  this.prestamoService.getPrestados().subscribe({
+    next: (data) => {
+      setTimeout(() => {
         this.prestados = data;
         this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error al cargando prestados:', err),
-    });
-  }
+      });
+    },
+    error: (err) => console.error('Error al cargando prestados:', err),
+  });
+}
 
   prestar(): void {
     this.validarEntidadAjena();
@@ -135,13 +140,13 @@ export class PrestarDevolverComponent implements OnInit {
   }
 
   limpiarPrestamo(): void {
-    this.herramientaSeleccionadaId = null;
+    this.herramientaSeleccionadaId = undefined;
     this.entidadAjena = '';
     this.anotacionesPrestamo = '';
   }
 
   limpiarDevolucion(): void {
-    this.herramientaDevueltaId = null;
+    this.herramientaDevueltaId = undefined;
     this.anotacionesDevolucion = '';
   }
 
