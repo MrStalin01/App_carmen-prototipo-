@@ -96,7 +96,7 @@
               [indeterminate]="someSelected"
               (change)="toggleAll($event)" />
           </th>
-          <th>ID Curso</th>
+          <th>ID CursoService</th>
           <th>Nombre</th>
           <th>Descripción</th>
           <th>Ubicación</th>
@@ -123,7 +123,7 @@
           </td>
           <td>
             <div class="d-flex align-items-center gap-2">
-              <div class="avatar-profesor">{{ curso.profesor.charAt(0) }}</div>
+              <div class="avatar-profesor">{{ curso.profesor ? curso.profesor.charAt(0) : '?' }}</div>
               {{ curso.profesor }}
             </div>
           </td>
