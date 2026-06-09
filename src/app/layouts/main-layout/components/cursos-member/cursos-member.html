@@ -6,7 +6,7 @@
     @if (apuntados.size === 0) {
       <p class="vacio">Sin cursos asignados</p>
     } @else {
-      @for (curso of cursoService.cursos(); track curso.id) {
+      @for (curso of cursos; track curso.id) {
         @if (estaApuntado(curso)) {
           <div class="curso-activo">
             <span>{{ curso.nombre }}</span>
@@ -19,7 +19,7 @@
 
   <div class="seccion">
     <p class="seccion-titulo">Cursos disponibles</p>
-    @for (curso of cursoService.cursos(); track curso.id) {
+    @for (curso of cursos; track curso.id) {
       <div class="curso-item">
         <input
           type="checkbox"
@@ -35,5 +35,5 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">Cerrar</button>
-  <button aling="start" mat-button (click)="guardar()">Guardar</button>
+  <button mat-button (click)="guardar()">Guardar</button>
 </mat-dialog-actions>

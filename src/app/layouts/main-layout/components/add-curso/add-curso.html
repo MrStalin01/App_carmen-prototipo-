@@ -1,71 +1,81 @@
 <h3 mat-dialog-title>Nueva Actividad</h3>
+
 <mat-dialog-content>
+
+  <!-- SECCIÓN: ACTIVIDAD -->
+  <p class="seccion-titulo">Actividad</p>
 
   <div class="campo">
     <label>Nombre de la actividad *</label>
     <select [(ngModel)]="nombreSeleccionado" (ngModelChange)="onNombreChange()">
       <option value="" disabled>— Selecciona una actividad —</option>
-      @for (c of cursosExistentes; track c) {
-        <option [value]="c">{{ c }}</option>
+      @for (a of actividadesExistentes; track a) {
+        <option [value]="a">{{ a }}</option>
       }
-
       <option disabled>──────────────────</option>
       <option value="__nuevo__">✏️ Añadir nueva actividad</option>
     </select>
   </div>
 
-
-  @if (mostrarInputNuevo) {
+  @if (mostrarInputNuevoActividad) {
     <div class="campo campo-nuevo-curso">
       <label>Nombre de la nueva actividad *</label>
       <input
-        [(ngModel)]="nombreNuevo"
-        placeholder="Ej: Inglés avanzado"
+        [(ngModel)]="nombreNuevoActividad"
+        placeholder="Ej: Funcional & Cross"
         autofocus
       />
     </div>
   }
 
+  <!-- SECCIÓN: CURSO -->
+  <p class="seccion-titulo" style="margin-top: 1.25rem;">Curso</p>
+
   <div class="campo">
-    <label>Descripción</label>
-    <textarea [(ngModel)]="curso.descripcion" placeholder="Describe el curso..." rows="3"></textarea>
+    <label>Nombre del curso *</label>
+    <input
+      [(ngModel)]="curso.nombre_curso"
+      placeholder="Ej: Turno Tarde - Avanzado"
+    />
   </div>
+
   <div class="campo">
     <label>Ubicación</label>
-    <input [(ngModel)]="curso.ubicacion" placeholder="Ej: Sala 2, Planta baja" />
+    <input [(ngModel)]="curso.lugar" placeholder="Ej: Zona Box Exterior" />
   </div>
-  <div class="campo">
-    <label>Profesor asignado</label>
-    <select [(ngModel)]="curso.profesor">
-      <option value="">— Sin asignar —</option>
-      @for (p of profesores; track p) {
-        <option [value]="p">{{ p }}</option>
-      }
-    </select>
-  </div>
+
   <div class="fila">
     <div class="campo">
-      <label>Horario</label>
-      <input [(ngModel)]="curso.horario" placeholder="Ej: Lun y Mié 10:00–11:00" />
+      <label>Duración</label>
+      <input [(ngModel)]="curso.duracion" placeholder="Ej: 60 min" />
     </div>
     <div class="campo campo--pequeño">
       <label>Plazas máx.</label>
       <input type="number" [(ngModel)]="curso.plazas" min="1" placeholder="20" />
     </div>
   </div>
-  <div class="campo campo-estado">
-    <label>Estado</label>
-    <div class="toggle-wrap">
-      <span [class.dim]="curso.activo">Inactivo</span>
-      <label class="toggle">
-        <input type="checkbox" [(ngModel)]="curso.activo" />
-        <span class="slider"></span>
-      </label>
-      <span [class.dim]="!curso.activo">Activo</span>
+
+  <div class="campo">
+    <label>Horarios <small class="text-muted">(separados por coma)</small></label>
+    <input
+      [(ngModel)]="curso.horarios"
+      placeholder="Ej: Lunes 18:00, Miércoles 18:00"
+    />
+  </div>
+
+  <div class="fila">
+    <div class="campo">
+      <label>Fecha inicio</label>
+      <input type="date" [(ngModel)]="curso.fecha_inicio" />
+    </div>
+    <div class="campo">
+      <label>Fecha fin</label>
+      <input type="date" [(ngModel)]="curso.fecha_fin" />
     </div>
   </div>
 
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">Cancelar</button>
   <button class="btn-guardar" (click)="confirm()" [disabled]="!puedeGuardar">

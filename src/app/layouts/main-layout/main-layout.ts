@@ -111,12 +111,10 @@ export class MainLayout implements OnInit {
     this.actividadService.getAll().subscribe({
       next: (data: any[]) => {
         this.cursosDisponibles = data.flatMap((a: any) =>
-          (a.cursos ?? []).map((c: any) => c.nombreCurso)
+          (a.cursos ?? []).map((c: any) => c.nombre_curso ?? '')  // era c.nombreCurso
         );
       },
-      error: (err: any) => {
-        console.error('Error cargando actividades:', err);
-      },
+      error: (err: any) => console.error('Error cargando actividades:', err),
     });
   }
 
@@ -142,9 +140,8 @@ export class MainLayout implements OnInit {
   private mapearSocio(s: any): Socio {
     const info = s.informacion_personal ?? {};
 
-
     const cursos: string[] = Object.values(s.actividades ?? {}).flatMap(
-    (a: any) => (a.cursos ?? []).map((c: any) => c.nombreCurso ?? c.id ?? '')
+      (a: any) => (a.cursos ?? []).map((c: any) => c.nombre_curso ?? c.id ?? '')  // era c.nombreCurso
     );
 
     return {

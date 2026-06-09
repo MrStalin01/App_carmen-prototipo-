@@ -80,18 +80,18 @@ export class CursosComponent implements OnInit {
     this.actividadService.getAll().subscribe((actividades: any[]) => {
       this.cursos = actividades.flatMap((a: any) =>
         (a.cursos ?? []).map((c: any) => ({
-          id: c.id,
-          nombre: c.nombreCurso,
-          descripcion: '',
-          ubicacion: c.ubicacion ?? '',
-          profesor: c.nombreProfesor ?? '',
-          horario: c.duracion ?? '',
-          dias: (c.clases ?? []).join(', '),
-          plazas: c.plazas ?? 0,
-          inscritos: 0,
-          activo: c.fecha_fin ? new Date(c.fecha_fin) >= new Date() : true,
-          fechaFin: c.fecha_fin ?? '',
-          selected: false,
+          id:          c.id                        ?? '',
+          nombre:      c.nombre_curso              ?? '',
+          descripcion: a.nombre_actividad          ?? '',  // actividad como contexto
+          ubicacion:   c.lugar                     ?? '',
+          profesor:    c.profesor?.nombre_profesor ?? '',
+          horario:     c.duracion                  ?? '',
+          dias:        (c.horarios ?? []).join(', '),
+          plazas:      c.plazas                    ?? 0,
+          inscritos:   (c.alumnos ?? []).length,
+          activo:      c.fecha_fin ? new Date(c.fecha_fin) >= new Date() : true,
+          fechaFin:    c.fecha_fin                 ?? '',
+          selected:    false,
         }))
       );
       this.cursosFiltrados = [...this.cursos];
@@ -148,7 +148,39 @@ export class CursosComponent implements OnInit {
   }
 
   openAddCurso(): void {
-    this.dialog.open(AddCurso, { width: '400px' });
+    const dialogRef = this.dialog.open(AddCurso, {
+      width: '400px',
+      data: { cursosExistentes: this.cursos.map(c => c.descripcion).filter(Boolean) },
+    });
+
+    dialogRef.afterClosed().subscribe((payload: any) => {
+      if (!payload) return;
+      this.actividadService.add(payload).subscribe({
+        next: () => {
+          // Recargar la lista para ver la nueva actividad/curso
+          this.actividadService.getAll().subscribe((actividades: any[]) => {
+            this.cursos = actividades.flatMap((a: any) =>
+              (a.cursos ?? []).map((c: any) => ({
+                id:          c.id                         ?? '',
+                nombre:      c.nombre_curso               ?? '',
+                descripcion: a.nombre_actividad           ?? '',
+                ubicacion:   c.lugar                      ?? '',
+                profesor:    c.profesor?.nombre_profesor  ?? '',
+                horario:     c.duracion                   ?? '',
+                dias:        (c.horarios ?? []).join(', '),
+                plazas:      c.plazas                     ?? 0,
+                inscritos:   (c.alumnos ?? []).length,
+                activo:      c.fecha_fin ? new Date(c.fecha_fin) >= new Date() : true,
+                fechaFin:    c.fecha_fin                  ?? '',
+                selected:    false,
+              }))
+            );
+            this.cursosFiltrados = [...this.cursos];
+          });
+        },
+        error: (err: any) => console.error('Error ADD actividad:', err),
+      });
+    });
   }
 
   submit(): void {

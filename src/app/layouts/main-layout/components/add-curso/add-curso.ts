@@ -3,19 +3,8 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CursoService } from '../../services/curso';
 
-export interface Curso {
-  nombre: string;
-  descripcion: string;
-  ubicacion: string;
-  profesor: string;
-  horario: string;
-  plazas: number | null;
-  activo: boolean;
-}
-
-const NUEVO_CURSO_KEY = '__nuevo__';
+const NUEVO_KEY = '__nuevo__';
 
 @Component({
   selector: 'app-add-curso',
@@ -26,59 +15,75 @@ const NUEVO_CURSO_KEY = '__nuevo__';
 })
 export class AddCurso {
   private dialogRef = inject(MatDialogRef<AddCurso>);
-  private cursoService = inject(CursoService);
 
-  // Lista de cursos ya existentes
-  cursosExistentes: string[] = ['Aleman I', 'Ingles', 'Yoga', 'Aleman III'];
+  // Actividades existentes para el select
+  actividadesExistentes: string[] = [];
 
-  profesores: string[] = ['Laura Sánchez', 'Patricia Herrera', 'Javier Castro'];
-
-  // Valor del <select>
+  // Select de actividad
   nombreSeleccionado: string = '';
+  mostrarInputNuevoActividad: boolean = false;
+  nombreNuevoActividad: string = '';
 
-  mostrarInputNuevo: boolean = false;
-
-  nombreNuevo: string = '';
-
-  curso: Curso = {
-    nombre: '',
-    descripcion: '',
-    ubicacion: '',
-    profesor: '',
-    horario: '',
-    plazas: null,
-    activo: true,
+  // Datos del curso
+  curso = {
+    nombre_curso:  '',
+    lugar:         '',
+    duracion:      '',
+    horarios:      '' as string,   // se parte por comas al enviar
+    plazas:        null as number | null,
+    fecha_inicio:  '',
+    fecha_fin:     '',
   };
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
-    this.cursosExistentes = data?.cursosExistentes ?? [];
+    this.actividadesExistentes = data?.cursosExistentes ?? [];
   }
 
-  onNombreChange() {
-    if (this.nombreSeleccionado === NUEVO_CURSO_KEY) {
-      this.mostrarInputNuevo = true;
-      this.curso.nombre = '';
+  onNombreChange(): void {
+    if (this.nombreSeleccionado === NUEVO_KEY) {
+      this.mostrarInputNuevoActividad = true;
     } else {
-      this.mostrarInputNuevo = false;
-      this.curso.nombre = this.nombreSeleccionado;
+      this.mostrarInputNuevoActividad = false;
     }
   }
 
-  get nombreFinal(): string {
-    return this.mostrarInputNuevo ? this.nombreNuevo.trim() : this.curso.nombre.trim();
+  get nombreActividadFinal(): string {
+    return this.mostrarInputNuevoActividad
+      ? this.nombreNuevoActividad.trim()
+      : this.nombreSeleccionado.trim();
   }
 
   get puedeGuardar(): boolean {
-    return this.nombreFinal.length > 0;
+    return this.nombreActividadFinal.length > 0 && this.curso.nombre_curso.trim().length > 0;
   }
 
-  confirm() {
+  confirm(): void {
     if (!this.puedeGuardar) return;
-    this.curso.nombre = this.nombreFinal;
-    this.dialogRef.close(this.curso);
+
+    const payload = {
+      nombre_actividad: this.nombreActividadFinal,
+      cursos: [
+        {
+          nombre_curso:  this.curso.nombre_curso.trim(),
+          lugar:         this.curso.lugar.trim(),
+          duracion:      this.curso.duracion.trim(),
+          horarios:      this.curso.horarios
+            .split(',')
+            .map(h => h.trim())
+            .filter(h => h.length > 0),
+          plazas:        this.curso.plazas ?? 0,
+          fecha_inicio:  this.curso.fecha_inicio || null,
+          fecha_fin:     this.curso.fecha_fin    || null,
+          profesor:      null,
+          alumnos:       [],
+        },
+      ],
+    };
+
+    this.dialogRef.close(payload);
   }
 
-  cancel() {
+  cancel(): void {
     this.dialogRef.close(false);
   }
 }
