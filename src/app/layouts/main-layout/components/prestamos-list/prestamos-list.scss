@@ -9,7 +9,6 @@ $bar-bg:         #b2dfdb;
   display: block;
   background-color: $ava-bg;
   min-height: 100vh;
-
 }
 
 #fondo {
@@ -17,7 +16,6 @@ $bar-bg:         #b2dfdb;
   background-color: $ava-bg;
   position: relative;
 }
-
 
 .header {
   width: 100%;
@@ -28,7 +26,6 @@ $bar-bg:         #b2dfdb;
     display: block;
   }
 }
-
 
 .action-bar {
   display: flex;
@@ -77,11 +74,9 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-
 .prestamos-container {
   padding: 24px 28px;
 }
-
 
 .buscar-wrapper {
   margin-bottom: 20px;
@@ -126,7 +121,6 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-
 .botones {
   display: flex;
   gap: 12px;
@@ -159,7 +153,6 @@ $bar-bg:         #b2dfdb;
   }
 }
 
-
 ::ng-deep .mat-mdc-tab-group {
   padding-bottom: 30px;
 }
@@ -182,13 +175,18 @@ $bar-bg:         #b2dfdb;
   border-color: $ava-green-dark !important;
 }
 
-
 .tabla-wrapper {
   background: $ava-surface;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   margin-top: 8px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -214,7 +212,7 @@ thead {
 
 tbody {
   tr {
-    transition:  0.12s;
+    transition: 0.12s;
     border-top: 1px solid #eef5ee;
 
     &:hover { background: #f1faf1; }
@@ -227,7 +225,6 @@ tbody {
     }
   }
 }
-
 
 .prestado,
 .disponible {
@@ -250,7 +247,6 @@ tbody {
   color: $ava-green-dark;
 }
 
-
 .btn-eliminar {
   display: flex;
   align-items: center;
@@ -263,12 +259,12 @@ tbody {
   font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
-  transition:  0.15s;
+  transition: 0.15s;
 
   &:hover { background: #a93226; }
 }
 
-
+/* ===== RESPONSIVE PARA PANTALLAS MEDIANAS (ya definido por tu amigo) ===== */
 @media (max-width: 900px) {
   .action-bar {
     overflow-x: auto;
@@ -282,7 +278,67 @@ tbody {
 
   .tabla-wrapper {
     overflow-x: auto;
-
     table { min-width: 720px; }
+  }
+}
+
+/* ===== RESPONSIVE PARA MÓVILES (MENOS DE 480px) – MEJORA TUYA ===== */
+@media (max-width: 480px) {
+  .tabla-wrapper {
+    overflow-x: auto;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #cde8cd;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: $ava-surface;
+    padding: 6px 0;
+  }
+
+  td {
+    border: none !important;
+    border-bottom: 1px solid #eef5ee !important;
+    position: relative;
+    padding-left: 40% !important;
+    white-space: normal !important;
+    text-align: left;
+    font-size: 0.85rem;
+  }
+
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    width: 35%;
+    padding-right: 10px;
+    font-weight: 700;
+    color: #2c3e2f;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
+
+  .prestado,
+  .disponible,
+  .btn-eliminar {
+    display: inline-block;
+    margin: 2px 0;
+    padding: 2px 8px;
+    font-size: 0.7rem;
   }
 }
